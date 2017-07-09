@@ -3,7 +3,7 @@
 #' @description  Create \code{nStart} random sub-selections from the
 #' indexed grid and assign binary variable 1 to selected grids.
 #' This function initiates the genetic algorithm with a first random
-#' population, and will only be needed in the first iteration.
+#' population and will only be needed in the first iteration.
 #' @export
 #' @param Grid The data.frame output of "GridFilter" function,
 #' with X and Y coordinates and Grid cell IDs. (data.frame)
@@ -17,7 +17,7 @@
 #' Resulting list has the x and y coordinates, the grid cell ID
 #' and a binary variable of 1, indicating a turbine in the grid cell.
 #' (list)
-#' @examples {
+#' @examples
 #' library(sp)
 #' ## Exemplary input Polygon with 2km x 2km:
 #' Polygon1 <- Polygon(rbind(c(0, 0), c(0, 2000),
@@ -30,28 +30,30 @@
 #' plot(Polygon1,axes=TRUE)
 #'
 #' Grid <- GridFilter(Polygon1,200,1,"TRUE")
-#' firstPop <- StartGA(Grid[[1]], 10, 5)
+#'
+#' ## Create 5 individuals with 10 wind turbines each.
+#' firstPop <- StartGA(Grid = Grid[[1]], n = 10, nStart = 5)
 #' str(firstPop)
-#' }
+#'
 #' @author Sebastian Gatscha
 StartGA           <- function(Grid, n, nStart=100) {
   if (length(Grid$ID) <= n) {
     print("################### GA ERROR MESSAGE ###################")
-    print(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
+    cat(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
     stop("\n The amount of Grid-cells is smaller or equal the number of turbines requested.\n
          Decrease Resolution (fcrR), number of turbines (n), or Rotorradius (Rotor).")
-    cat("Press [enter] to continue")
+    cat("Press [enter] to exit")
     readline()
   }
   if (length(Grid$ID) < (2*n)) {
     print("################### GA ERROR MESSAGE ###################")
-    print(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
+    cat(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
     stop("\n The amount of Grid-cells should at least be double the size of turbines requested.\n
           Decrease Resolution (fcrR), number of turbines (n), or Rotorradius (Rotor).")
-    print("Press [enter] to continue")
+    print("Press [enter] to exit")
     readline()
   }
-  subsetSel = list(); ids=list();
+  subsetSel <- list(); ids <- list();
   ## How many parks for the initial population (10,20, amount of turbines?)
   for (i in 1:nStart){
     ## Assign Binary Variable 0 to all individuals

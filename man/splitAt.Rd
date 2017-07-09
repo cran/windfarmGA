@@ -10,21 +10,20 @@ splitAt(x, pos)
 \item{x}{A numeric variable representing the binary genetic code of an
 individual (numeric)}
 
-\item{pos}{A numeric value, which shows at which position the
+\item{pos}{A numeric value which shows at which position the
 genetic code is cut (numeric)}
 }
 \value{
 Returns a list of the splitted genetic code.
 }
 \description{
-Required function for the crossover method, to
+Required function for the crossover method to
 split a genetic code at random intervals. See also \code{\link{crossover1}}.
 }
 \examples{
-{
 splitAt(1:100,20)
 splitAt(as.matrix(1:100),20)
-}
+
 }
 \author{
 Sebastian Gatscha

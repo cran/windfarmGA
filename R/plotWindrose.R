@@ -24,7 +24,7 @@
 #'
 #' @return NULL
 #'
-#' @examples {
+#' @examples
 #' ## Exemplary Input Wind speed and direction data frame
 #' # Uniform wind speed and single wind direction
 #' data.in <- as.data.frame(cbind(ws=12,wd=0))
@@ -35,21 +35,21 @@
 #' data.in <- as.data.frame(cbind(ws=sample(1:25,10),wd=sample(1:260,10)))
 #' windrosePlot <- plotWindrose(data = data.in, spd = data.in$ws,
 #'    dir = data.in$wd)
-#'}
+#'
 #' @author Sebastian Gatscha
 
 
-plotWindrose <- function(data,spd,dir,spdres = 2,dirres = 10,spdmin = 1,
+plotWindrose <- function(data, spd, dir, spdres = 2, dirres = 10, spdmin = 1,
                           spdmax = 30, palette = "YlGnBu",  debug = 0,  spdseq = NULL){
 
-  countmax = NA
-  # require(ggplot2);   require(RColorBrewer)
+  countmax <- NA
+
   # Look to see what data was passed in to the function
   if (is.numeric(spd) & is.numeric(dir)){
     # assume that we've been given vectors of the speed and direction vectors
     data <- data.frame(spd = spd,dir = dir)
-    spd = "spd"
-    dir = "dir"
+    spd <- "spd"
+    dir <- "dir"
   } else if (exists("data")){
     # Assume that we've been given a data frame, and the name of the speed
     # and direction columns. This is the format we want for later use.

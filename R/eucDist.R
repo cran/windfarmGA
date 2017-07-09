@@ -11,11 +11,11 @@
 #' @return Returns a numeric value indicating the euclidian distance between
 #' two Points. (numeric)
 #'
-#' @examples {
+#' @examples
 #' x=c(200,100)
 #' y=c(1000,2000)
 #' euc.dist(x,y)
-#' }
+#'
 #' @author Sebastian Gatscha
 euc.dist          <- function(x,y) {
   round(sqrt(sum((x - y) ^ 2)),4)

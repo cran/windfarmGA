@@ -28,11 +28,10 @@ Calculates air density, temperature and air pressure
     standard atmosphere and the barometric height formula.
 }
 \examples{
-{
 data <- matrix(seq(0,5000,500));
 BaroHoehe(data)
 plot.ts(BaroHoehe(data))
-}
+
 
 }
 \author{

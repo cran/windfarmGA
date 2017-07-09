@@ -9,7 +9,7 @@ PointToLine2(x, y, plotAngles)
 \arguments{
 \item{x}{Coordinates of the current turbine. (numeric)}
 
-\item{y}{Coordinates of the turbine, that could potentially influence
+\item{y}{Coordinates of the turbine that could potentially influence
 the current turbine. (numeric)}
 
 \item{plotAngles}{A logical variable, which is used to plot the distances
@@ -20,13 +20,13 @@ Returns a matrix with the resulting distances and the coordinates
 of 3 points. (matrix)
 }
 \description{
-Takes two input coordinates, from the current turbine and
-from the potentially influencing turbine, as it stands in front of the
+Takes two input coordinates from the current turbine and
+from the potentially influencing turbine, which stands in front of the
 current turbine. The algorithm draws an imaginary right triangle between
 the two input points and a point C, which is calculated by the algorithm
-itself. Wind will always seem to come from north, as the input area will
+itself. Wind will always seem to come from north as the input area will
 be rotated accordingly if the incoming wind direction does not come from
-north. For further calculations only the distance perpendicular to the
+north. For further calculations, only the distance perpendicular to the
 wind direction and the sidewise distance to the potentially influencing
 turbine is required.
 }
@@ -38,14 +38,13 @@ where it will build a right triangle. plot(rbind(P1,P2,C,P1),type="l")
 See Examples.
 }
 \examples{
-{
 ## For further calculations only the distances between B-C and A-C
 ## and the angle at A will be needed. B represents the current turbine
 ## and A represents a turbine, that could potentially influence turbine B.
-x = c(100,100); y=c(500,500);
+x <- c(100,100); y <- c(500,500);
 plot(rbind(x,y),col=c("red","blue"),cex=2,pch=20);
 PointToLine2(x,y,TRUE)
-}
+
 }
 \author{
 Sebastian Gatscha

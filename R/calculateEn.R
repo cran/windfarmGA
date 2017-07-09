@@ -8,8 +8,9 @@
 #' @export
 #'
 #' @importFrom raster extract calc cellStats terrain resample overlay plot
+#' crop extent mask projectRaster
 #' @importFrom dplyr filter select
-#' @importFrom sp SpatialPoints coordinates
+#' @importFrom sp SpatialPoints coordinates spTransform proj4string
 #' @importFrom data.table data.table
 #' @importFrom calibrate textxy
 #' @importFrom maptools elide
@@ -27,9 +28,9 @@
 #' elevation and land cover information (numeric)
 #' @param windraster Dummy windraster for the considered area with value 1
 #' (raster)
-#' @param wnkl Indicates the angle, at which no wake influences are
+#' @param wnkl Indicates the angle at which no wake influences are
 #' considered (numeric)
-#' @param distanz Indicates the distance, after which the wake effects are
+#' @param distanz Indicates the distance after which the wake effects are
 #' considered to be eliminated (numeric)
 #' @param polygon1 The considered area as shapefile (SpatialPolygons)
 #' @param resol The resolution of the grid in meter (numeric)
@@ -38,12 +39,22 @@
 #' @param topograp Logical value that indicates whether the
 #' terrain effect model is activated (TRUE) or deactivated (FALSE)
 #' (logical)
-#' @param srtm_crop An SRTM raster for the considered area. Is only used,
+#' @param srtm_crop An SRTM raster for the considered area. It is only used
 #' when the terrain effect model is activated (raster)
-#' @param cclRaster A Corine Land Cover raster, that has to be downloaded
+#' @param cclRaster A Corine Land Cover raster that has to be downloaded
 #' previously. See also the details at \code{\link{windfarmGA}}
-#' The raster will only be used, when the terrain effect model is activated.
+#' The raster will only be used when the terrain effect model is activated.
 #' (raster)
+#' @param weibull A logical value that specifies whether to take Weibull
+#' parameters into account. If weibull==TRUE, the wind speed values from the
+#' 'dirSpeed' data frame are ignored. The algorithm will calculate the mean
+#' wind speed for every wind turbine according to the Weibull parameters.
+#' Default is FALSE. (logical)
+#' @param weibullsrc A list of Weibull parameter rasters, where the first list
+#' item must be the shape parameter raster k and the second item must be the
+#' scale parameter raster a of the Weibull distribution. If no list is given,
+#' then rasters included in the package are used instead, which currently
+#' only cover Austria. This variable is only used if weibull==TRUE. (list)
 #'
 #' @return Returns a list of an individual of the current generation
 #' with resulting wake effects, energy outputs, efficiency rates for every
@@ -51,9 +62,10 @@
 #' wind directions.
 #'
 #' @examples \dontrun{
-#' ## Create a random rectangular shapefile
+#' ## Create a random shapefile
 #' library(sp)
-#' Polygon1 <- Polygon(rbind(c(0, 0), c(0, 2000), c(2000, 2000), c(2000, 0)))
+#' Polygon1 <- Polygon(rbind(c(4498482, 2668272), c(4498482, 2669343),
+#'                     c(4499991, 2669343), c(4499991, 2668272)))
 #' Polygon1 <- Polygons(list(Polygon1),1);
 #' Polygon1 <- SpatialPolygons(list(Polygon1))
 #' Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
@@ -62,8 +74,9 @@
 #' plot(Polygon1,axes=TRUE)
 #'
 #' ## Initialize a dummy wind speed raster with value 1
-#' windraster <-raster::rasterize(Polygon1, raster::raster(raster::extent(Polygon1),
-#' ncol=180, nrow=180),field=1)
+#' windraster <-raster::rasterize(Polygon1, raster::raster(
+#'                                raster::extent(Polygon1),
+#'                                ncol=180, nrow=180),field=1)
 #'
 #' ## Create a uniform and unidirectional wind data.frame and plot the
 #' ## resulting wind rose
@@ -71,60 +84,101 @@
 #' windrosePlot <- plotWindrose(data = data.in, spd = data.in$ws,
 #'                 dir = data.in$wd, dirres=10, spdmax=20)
 #'
-#' ## Assign the rotor radius and the factor of the radius for grid spacing.
-#' Rotor= 50; fcrR= 5
+#' ## Assign the rotor radius and a factor of the radius for grid spacing.
+#' Rotor= 50; fcrR= 3
 #' resGrid <- GridFilter(shape = Polygon1,resol = Rotor*fcrR, prop=1,
 #'                       plotGrid =TRUE)
 #' ## Assign the indexed data frame to new variable. Element 2 of the list
 #' ## is the grid, saved as SpatialPolygon.
 #' resGrid1 <- resGrid[[1]]
 #'
-#' ## Create an initial population, with the indexed Grid, 15 turbines and
+#' ## Create an initial population with the indexed Grid, 15 turbines and
 #' ## 100 individuals.
 #' resStartGA <- StartGA(Grid = resGrid1,n = 15,nStart = 100)
 #'
 #' ## Calculate the expected energy output of the first individual of the
 #' ## population.
+#' par(mfrow=c(1,2))
 #' plot(Polygon1); points(resStartGA[[1]]$X,resStartGA[[1]]$Y, pch=20,cex=2)
 #' plot(resGrid[[2]],add=TRUE)
 #' resCalcEn <-calculateEn(sel=resStartGA[[1]],referenceHeight= 50,
 #'                    RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
 #'                    distanz = 100000, resol = 200,dirSpeed = data.in,
 #'                    RotorR = 50, polygon1 = Polygon1, topograp = FALSE,
-#'                    windraster,srtm_crop,cclRaster)
+#'                    windraster = windraster)
 #' length(resCalcEn)
 #' str(resCalcEn)
+#' resCalcEn <- as.data.frame(resCalcEn)
+#' plot(Polygon1, main = resCalcEn$Energy_Output_Red[[1]])
+#' points(x = resCalcEn$Bx, y = resCalcEn$By, pch = 20)
+#'
 #'
 #' ## Create a variable and multidirectional wind data.frame and plot the
 #' ## resulting wind rose
-#' data.in <- as.data.frame(cbind(ws=runif(10,1,25),wd=runif(10,0,360)))
-#' windrosePlot <- plotWindrose(data = data.in, spd = data.in$ws,
-#'                 dir = data.in$wd, dirres=10, spdmax=20)
+#' data.in10 <- as.data.frame(cbind(ws=runif(10,1,25),wd=runif(10,0,360)))
+#' windrosePlot <- plotWindrose(data = data.in10, spd = data.in10$ws,
+#'                 dir = data.in10$wd, dirres=10, spdmax=20)
 #'
 #' ## Calculate the energy outputs for the first individual with more than one
 #' ## wind direction.
 #' resCalcEn <-calculateEn(sel=resStartGA[[1]],referenceHeight= 50,
 #'                    RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
-#'                    distanz = 100000, resol = 200,dirSpeed = data.in,
+#'                    distanz = 100000, resol = 200,dirSpeed = data.in10,
 #'                    RotorR = 50, polygon1 = Polygon1, topograp = FALSE,
-#'                    windraster,srtm_crop,cclRaster)
+#'                    windraster = windraster)
 #' length(resCalcEn)
 #' str(resCalcEn)
+#'
+#' ## Take Weibull Paramter Raster from the package. (Only for Austria)
+#' plot(Polygon1); points(resStartGA[[1]]$X,resStartGA[[1]]$Y, pch=20,cex=2)
+#' plot(resGrid[[2]],add=TRUE)
+#' resCalcEn <-calculateEn(sel=resStartGA[[1]], referenceHeight=50,
+#'                         RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
+#'                         distanz = 100000, resol = 200,dirSpeed = data.in,
+#'                         RotorR = 50, polygon1 = Polygon1, topograp = FALSE,
+#'                         windraster = windraster, weibull = TRUE)
+#' length(resCalcEn)
+#' str(resCalcEn)
+#' resCalcEn <- as.data.frame(resCalcEn)
+#' plot(Polygon1, main = resCalcEn$Energy_Output_Red[[1]])
+#' points(x = resCalcEn$Bx, y = resCalcEn$By, pch = 20)
+#'
+#' ## Use your own rasters for the Weibull parameters.
+#' araster <- "/..pathto../a_param_raster.tif"
+#' kraster <- "/..pathto../k_param_raster.tif"
+#' weibullrasters <- list(raster(kraster), raster(araster))
+#' plot(Polygon1); points(resStartGA[[1]]$X,resStartGA[[1]]$Y, pch=20,cex=2)
+#' plot(resGrid[[2]],add=TRUE)
+#' resCalcEn1 <-calculateEn(sel=resStartGA[[1]], referenceHeight= 50,
+#'                          RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
+#'                          distanz = 100000, resol = 200,dirSpeed = data.in,
+#'                          RotorR = 50, polygon1 = Polygon1, topograp = FALSE,
+#'                          windraster = windraster, weibull = TRUE,
+#'                          weibullsrc = weibullrasters)
+#' length(resCalcEn1)
+#' str(resCalcEn1)
+#' resCalcEn1 <- as.data.frame(resCalcEn1)
+#' plot(Polygon1, main = resCalcEn1$Energy_Output_Red[[1]])
+#' points(x = resCalcEn1$Bx, y = resCalcEn1$By, pch = 20)
 #' }
 #' @author Sebastian Gatscha
 #'
 calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness,
                               windraster,wnkl,distanz, polygon1,resol,RotorR,dirSpeed,
-                              srtm_crop,topograp,cclRaster){
+                              srtm_crop,topograp,cclRaster, weibull, weibullsrc){
 
-  PlotCalc=FALSE
+  PlotCalc <- FALSE
 
-  sel1 = sel[,2:3];
+  sel1 <- sel[,2:3];
   ## Assign constant values
   cT <- 0.88;   air_rh <- 1.225;   k = 0.075;
   ## Extract values from windraster, which will be 1 in this case, as they will get multiplied
   ## by the incoming wind speed.
   windpo <- raster::extract(x= windraster, y = as.matrix((sel1)), buffer=resol*1, small=T,fun= mean,na.rm=T);
+
+  if (missing(weibull)==TRUE) {
+    weibull=F
+  }
 
   ## Terrain Effect Model:
   if (topograp == TRUE) {
@@ -134,7 +188,7 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
     windpo <- windpo * orogrnum
 
     ## Get Elevation of Turbine Locations to estimate the air density at the resulting height
-    heightWind <- raster::extract(x= srtm_crop, y = as.matrix((sel1)), small=T,fun= max,na.rm=T);heightWind
+    heightWind <- raster::extract(x= srtm_crop, y = as.matrix((sel1)), small=T,fun= max,na.rm=T);
     ## Plot the elevation and the wind speed multiplier rasters
     if (PlotCalc==TRUE){
       par(mfrow=c(2,1))
@@ -159,9 +213,9 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
 
     ## Corine Land Cover Surface Roughness values and Elevation Roughness
     SurfaceRoughness0 <- raster::extract(x= cclRaster, y = as.matrix((sel1)),buffer=resol*2,
-                                         small=T,fun= mean,na.rm=T);SurfaceRoughness0
+                                         small=T,fun= mean,na.rm=T);
     SurfaceRoughness1 <- raster::extract(x=raster::terrain(srtm_crop,"roughness"), y = as.matrix((sel1)),
-                                         buffer=resol*2, small=T,fun= mean,na.rm=T);SurfaceRoughness1
+                                         buffer=resol*2, small=T,fun= mean,na.rm=T);
     SurfaceRoughness <-SurfaceRoughness*(1+(SurfaceRoughness1/max(raster::res(srtm_crop))));
     elrouind <- raster::terrain(srtm_crop,"roughness")
     elrouindn <- raster::resample(elrouind,cclRaster,method="ngb")
@@ -185,7 +239,7 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
     }
 
     ## New Wake Decay Constant calculated with new surface roughness values
-    k = 0.5/(log(RotorHeight/SurfaceRoughness))
+    k <- 0.5/(log(RotorHeight/SurfaceRoughness))
     ## Plot resulting Wake Decay Values
     if (PlotCalc==TRUE){
       graphics::par(mfrow=c(1,1)); cexa=0.9
@@ -198,6 +252,18 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
 
   }
 
+  if (weibull==T){
+    if (missing(weibullsrc)){
+      cat("\nWeibull Informations from package will be used.\n")
+      path <- paste0(system.file(package = "windfarmGA"), "/extdata/")
+      k_param = ""
+      a_param = ""
+      load(file = paste0(path, "k_weibull.rda"))
+      load(file = paste0(path, "a_weibull.rda"))
+      weibullsrc = list(k_param, a_param)
+    }
+  }
+
   ## For every wind direction, calculate the energy output. Do so by rotating Polygon for all angles and
   ## analyze, which turbine is affected by another one to calculate total energy output.
   ## Save Output in a list.
@@ -208,6 +274,38 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
 
     ## Get mean windspeed for every turbine location from windraster
     pointWind <- windpo * dirSpeed$ws[index]
+
+
+    # cat(pointWind)
+
+    if (weibull==T){
+      k_param <- weibullsrc[[1]]
+      a_param <- weibullsrc[[2]]
+
+      PolygonRaster <- sp::spTransform(polygon1, CRSobj = sp::proj4string(a_param))
+      k_par_crop <- raster::crop(x = k_param, y = raster::extent(PolygonRaster))
+      a_par_crop <- raster::crop(x = a_param, y = raster::extent(PolygonRaster))
+      weibl_k <- raster::mask(x = k_par_crop, mask = PolygonRaster)
+      weibl_a <- raster::mask(x = a_par_crop, mask = PolygonRaster)
+      Erwartungswert <- weibl_a * (gamma(1 + (1/weibl_k)))
+
+      weibl_k <- projectRaster(weibl_k, crs = proj4string(polygon1))
+      weibl_a <- projectRaster(weibl_a, crs = proj4string(polygon1))
+      Erwartungswert <- projectRaster(Erwartungswert, crs = proj4string(polygon1))
+
+      if (PlotCalc == TRUE){
+          par(mfrow=c(3,1), ask=F)
+          plot(Erwartungswert, main="Mean Weibull"); plot(polygon1, add=T)
+          plot(weibl_a, main="A Weibull Parameter"); plot(polygon1, add=T)
+          plot(weibl_k, main="K Weibull Parameter"); plot(polygon1, add=T)
+      }
+
+      Erwartungswertxy <- raster::extract(x= Erwartungswert, y = as.matrix((sel1)),
+                                          buffer=resol*1, small=T,fun= mean,na.rm=T);
+      pointWind <- windpo * Erwartungswertxy
+
+      # cat(pointWind)
+    }
 
     ## Calculate Windspeed according to Rotor Height using wind profile law. Other law possible with
     ## log MISSING:
@@ -248,7 +346,7 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
     dfAll <- do.call("rbind",BgleInf) ;
 
     ## Create a list for every turbine
-    windlist = vector("list",length(sel1[,1]))
+    windlist <- vector("list",length(sel1[,1]))
 
     ## Assign Windspeed to a filtered list with all turbines and add the desired rotor radius to the
     ## data frame
@@ -263,21 +361,21 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
     windlist$RotorR <- as.numeric(RotorR);
 
     ## Calculate the wake Radius and the rotor area for every turbine.
-    lnro = nrow(windlist); windlist$WakeR <- 0; windlist$Rotorflaeche <- 0
+    lnro <- nrow(windlist); windlist$WakeR <- 0; windlist$Rotorflaeche <- 0
     for (i in 1:lnro){
       RotD <- as.numeric(windlist[i,]$RotorR)
       if (windlist[i,]$Laenge_B != 0) {
 
         if (topograp==TRUE){
-          windlist[i,]$WakeR = (((RotD * 2) + (2*k[windlist[i,]$Punkt_id]*
+          windlist[i,]$WakeR <- (((RotD * 2) + (2*k[windlist[i,]$Punkt_id]*
                                                  (as.numeric(windlist[i,]$Laenge_B))))/2)[1]
         } else {
-          windlist[i,]$WakeR = (((RotD * 2) + (2*k*(as.numeric(windlist[i,]$Laenge_B))))/2)[1]
+          windlist[i,]$WakeR <- (((RotD * 2) + (2*k*(as.numeric(windlist[i,]$Laenge_B))))/2)[1]
         }
       } else {
         windlist[i,]$WakeR = 0
       }
-      windlist[i,]$Rotorflaeche = (RotD^2) *pi
+      windlist[i,]$Rotorflaeche <- (RotD^2) *pi
     };
 
     ## Calculate the overlapping area and the overlapping percentage.
@@ -320,7 +418,7 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
       if (topograp==TRUE){
         b <- (1 + (k[windlist[p,]$Punkt_id]*s))^2;
       } else {
-        b <- (1 + (k*s))^2;b
+        b <- (1 + (k*s))^2;
       }
       aov <- (windlist[p,]$A_ov / windlist[p,]$Rotorflaeche);
       windlist[p,]$V_red <- (aov *(a / b))
@@ -330,7 +428,7 @@ calculateEn       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughness
 
     ## Calculate multiple wake effects, total wake influence, the new resulting wind velocity
     ## and add the Grid IDs.
-    maPi = max(windlist$Punkt_id)
+    maPi <- max(windlist$Punkt_id)
     windlist$V_i <- 0; windlist$TotAbschProz <- 0; windlist$V_New <- 0; windlist$Rect_ID <- 0
     for (z in 1:maPi) {
       windlist[windlist$Punkt_id==z,]$V_i <-  sqrt(sum(windlist[windlist$Punkt_id==z,]$V_red^2))

@@ -28,7 +28,6 @@ the selected individuals after the \code{\link{selection1}} function and
 produces new offsprings through permutation.
 }
 \examples{
-{
  ## Create two random parents with an index and random binary values
  Parents <- data.frame(cbind(ID=1:20,bin=sample(c(0,1),20,replace=TRUE,
                          prob = c(70,30)),bin.1=sample(c(0,1),20,
@@ -51,7 +50,7 @@ produces new offsprings through permutation.
 
  ## or with random locations and 5 crossover parts
  crossover1(CrossSampl, u=4.9, uplimit=300, crossPart = "RAN")
-}
+
 
 }
 \author{

@@ -19,11 +19,10 @@ two Points. (numeric)
 Calculates the euclidian distance between two points.
 }
 \examples{
-{
 x=c(200,100)
 y=c(1000,2000)
 euc.dist(x,y)
-}
+
 }
 \author{
 Sebastian Gatscha

@@ -26,7 +26,7 @@
 #' relevant coordinates, the distances and angles in between and assigns
 #' the Point ID. (list)
 #'
-#' @examples {
+#' @examples
 #' library(sp);library(raster)
 #' ## Exemplary input Polygon with 2km x 2km:
 #' polYgon <- Polygon(rbind(c(0, 0), c(0, 2000),
@@ -45,13 +45,11 @@
 #'
 #' resInfluPoi <- InfluPoints(t,wnkl,dist,polYgon,dirct,plotAngles=TRUE)
 #' str(resInfluPoi)
-#' }
+#'
 #' @author Sebastian Gatscha
 InfluPoints       <- function(t, wnkl, dist,polYgon,dirct,plotAngles=FALSE) {
-  # t = xyBgldMa; dist = distanz; polYgon = Polygon; dirct = angle
-
-  # For every turbine in the wind farm, find all other turbines, that stand in front, next
-  # and inside a certain angle of the incoming wind direction and assing to the list
+  ## For every turbine in the wind farm, find all other turbines, that stand in front, next
+  ## and inside a certain angle of the incoming wind direction and assing to the list
   pointList <- list();
   for (i in 1:(length(t[,1]))) {
     ## Calculate the angles and distances of pontentially influencing turbines (data.frame)

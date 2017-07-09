@@ -27,10 +27,9 @@ and a binary variable of 1, indicating a turbine in the grid cell.
 Create \code{nStart} random sub-selections from the
 indexed grid and assign binary variable 1 to selected grids.
 This function initiates the genetic algorithm with a first random
-population, and will only be needed in the first iteration.
+population and will only be needed in the first iteration.
 }
 \examples{
-{
 library(sp)
 ## Exemplary input Polygon with 2km x 2km:
 Polygon1 <- Polygon(rbind(c(0, 0), c(0, 2000),
@@ -43,9 +42,11 @@ proj4string(Polygon1) <- CRS(Projection)
 plot(Polygon1,axes=TRUE)
 
 Grid <- GridFilter(Polygon1,200,1,"TRUE")
-firstPop <- StartGA(Grid[[1]], 10, 5)
+
+## Create 5 individuals with 10 wind turbines each.
+firstPop <- StartGA(Grid = Grid[[1]], n = 10, nStart = 5)
 str(firstPop)
-}
+
 }
 \author{
 Sebastian Gatscha

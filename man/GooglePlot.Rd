@@ -24,12 +24,16 @@ energy solution and (plotEn==2) will plot the best efficiency solution.
 \item{Projection}{A desired Projection can be used instead
 of the default Lambert Azimuthal Equal Area Projection. (character)}
 
-\item{...}{If the plot is not required, it can be disabled with
-the option \code{plT = FALSE}}
+\item{...}{Some arguments can be passed to
+\link[RgoogleMaps]{GetMap} and \link[RgoogleMaps]{PlotOnStaticMap},
+of the 'RgoogleMaps' package including \code{maptype}, \code{col},
+\code{cex}, \code{pch}, \code{size} and \code{zoom}. If the plot is not
+required, it can be disabled with the option \code{plT = FALSE}.
+Check the examples for some action.}
 }
 \value{
 Returns a data.frame with the coordinates in LON/LAT and plots
-the desired best result with a google background map. (data.frame)
+the desired best result with a Google background map. (data.frame)
 }
 \description{
 Plot the best energy or efficiency solutions with a
@@ -37,35 +41,31 @@ background image of Google maps.
 }
 \examples{
 \donttest{
-## Create a random rectangular shapefile
-library(sp)
-Polygon1 <- Polygon(rbind(c(4498482, 2668272), c(4498482, 2669343),
-                          c(4499991, 2669343), c(4499991, 2668272)))
-Polygon1 <- Polygons(list(Polygon1),1);
-Polygon1 <- SpatialPolygons(list(Polygon1))
-Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
-+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-proj4string(Polygon1) <- CRS(Projection)
-plot(Polygon1,axes=TRUE)
+## Add some data examples from the package
+load(file = system.file("extdata/resultrect.rda", package = "windfarmGA"))
+load(file = system.file("extdata/resulthex.rda", package = "windfarmGA"))
+load(file = system.file("extdata/polygon.rda", package = "windfarmGA"))
 
-## Create a uniform and unidirectional wind data.frame and plots the
-## resulting wind rose
-## Uniform wind speed and single wind direction
-data.in <- as.data.frame(cbind(ws=12,wd=0))
-# windrosePlot <- plotWindrose(data = data.in, spd = data.in$ws,
-#                dir = data.in$wd, dirres=10, spdmax=20)
+## Plot the results of a wind farm optimization
+result <- resultrect
+Polygon1 <- polygon
 
-## Runs an optimization run for 10 iterations (iteration) with the
-## given shapefile (Polygon1), the wind data.frame (data.in),
-## 12 turbines (n) with rotor radii of 30m (Rotor) and a grid spacing
-## factor of 3 (fcrR) and other required inputs.
-result <- genAlgo(Polygon1 = Polygon1, n=12, Rotor=20,fcrR=3,iteration=10,
-             vdirspe = data.in,crossPart1 = "EQU",selstate="FIX",mutr=0.8,
-            Proportionality = 1, SurfaceRoughness = 0.3, topograp = FALSE,
-            elitism=TRUE, nelit = 7, trimForce = TRUE,
-            referenceHeight = 50,RotorHeight = 100)
+GooglePlot(result, Polygon1, 1, 1)
+GooglePlot(result, Polygon1, 2, 1, zoom=14, maptype="hybrid",
+           col="darkblue", pch=18)
+GooglePlot(result, Polygon1, 3, 1, zoom=14, maptype="terrain",
+           col="black", pch=20)
+GooglePlot(result, Polygon1, 3, 2, zoom=15, maptype="satellite",
+           col="red", pch=10)
+GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="mobile",
+           col="darkblue", pch=17)
+GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="hybrid",
+           col="darkblue", pch=20)
+GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="hybrid",
+           col="blue", pch=18, cex= 2)
+GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="hybrid",
+           col="blue", pch=18, cex= 2, size=c(320,320))
 
-GooglePlot(result, Polygon1, 1,1)
 }
 }
 \author{

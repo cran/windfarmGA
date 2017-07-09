@@ -37,7 +37,6 @@ Find all turbines that could potentially influence
 another turbine and save them to a list.
 }
 \examples{
-{
 library(sp);library(raster)
 ## Exemplary input Polygon with 2km x 2km:
 polYgon <- Polygon(rbind(c(0, 0), c(0, 2000),
@@ -56,7 +55,7 @@ dirct=0
 
 resInfluPoi <- InfluPoints(t,wnkl,dist,polYgon,dirct,plotAngles=TRUE)
 str(resInfluPoi)
-}
+
 }
 \author{
 Sebastian Gatscha

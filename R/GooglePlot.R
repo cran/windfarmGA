@@ -23,42 +23,42 @@
 #' (numeric)
 #' @param Projection A desired Projection can be used instead
 #' of the default Lambert Azimuthal Equal Area Projection. (character)
-#' @param ... If the plot is not required, it can be disabled with
-#' the option \code{plT = FALSE}
+#' @param ... Some arguments can be passed to
+#' \link[RgoogleMaps]{GetMap} and \link[RgoogleMaps]{PlotOnStaticMap},
+#' of the 'RgoogleMaps' package including \code{maptype}, \code{col},
+#' \code{cex}, \code{pch}, \code{size} and \code{zoom}. If the plot is not
+#' required, it can be disabled with the option \code{plT = FALSE}.
+#' Check the examples for some action.
 #'
 #' @return Returns a data.frame with the coordinates in LON/LAT and plots
-#' the desired best result with a google background map. (data.frame)
+#' the desired best result with a Google background map. (data.frame)
 #'
 #' @examples \donttest{
-#' ## Create a random rectangular shapefile
-#' library(sp)
-#' Polygon1 <- Polygon(rbind(c(4498482, 2668272), c(4498482, 2669343),
-#'                           c(4499991, 2669343), c(4499991, 2668272)))
-#' Polygon1 <- Polygons(list(Polygon1),1);
-#' Polygon1 <- SpatialPolygons(list(Polygon1))
-#' Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
-#' +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-#' proj4string(Polygon1) <- CRS(Projection)
-#' plot(Polygon1,axes=TRUE)
+#' ## Add some data examples from the package
+#' load(file = system.file("extdata/resultrect.rda", package = "windfarmGA"))
+#' load(file = system.file("extdata/resulthex.rda", package = "windfarmGA"))
+#' load(file = system.file("extdata/polygon.rda", package = "windfarmGA"))
 #'
-#' ## Create a uniform and unidirectional wind data.frame and plots the
-#' ## resulting wind rose
-#' ## Uniform wind speed and single wind direction
-#' data.in <- as.data.frame(cbind(ws=12,wd=0))
-#' # windrosePlot <- plotWindrose(data = data.in, spd = data.in$ws,
-#' #                dir = data.in$wd, dirres=10, spdmax=20)
+#' ## Plot the results of a wind farm optimization
+#' result <- resultrect
+#' Polygon1 <- polygon
 #'
-#' ## Runs an optimization run for 10 iterations (iteration) with the
-#' ## given shapefile (Polygon1), the wind data.frame (data.in),
-#' ## 12 turbines (n) with rotor radii of 30m (Rotor) and a grid spacing
-#' ## factor of 3 (fcrR) and other required inputs.
-#' result <- genAlgo(Polygon1 = Polygon1, n=12, Rotor=20,fcrR=3,iteration=10,
-#'              vdirspe = data.in,crossPart1 = "EQU",selstate="FIX",mutr=0.8,
-#'             Proportionality = 1, SurfaceRoughness = 0.3, topograp = FALSE,
-#'             elitism=TRUE, nelit = 7, trimForce = TRUE,
-#'             referenceHeight = 50,RotorHeight = 100)
+#' GooglePlot(result, Polygon1, 1, 1)
+#' GooglePlot(result, Polygon1, 2, 1, zoom=14, maptype="hybrid",
+#'            col="darkblue", pch=18)
+#' GooglePlot(result, Polygon1, 3, 1, zoom=14, maptype="terrain",
+#'            col="black", pch=20)
+#' GooglePlot(result, Polygon1, 3, 2, zoom=15, maptype="satellite",
+#'            col="red", pch=10)
+#' GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="mobile",
+#'            col="darkblue", pch=17)
+#' GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="hybrid",
+#'            col="darkblue", pch=20)
+#' GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="hybrid",
+#'            col="blue", pch=18, cex= 2)
+#' GooglePlot(result, Polygon1, 1, 1, zoom=14, maptype="hybrid",
+#'            col="blue", pch=18, cex= 2, size=c(320,320))
 #'
-#' GooglePlot(result, Polygon1, 1,1)
 #'}
 #' @author Sebastian Gatscha
 GooglePlot <- function(result,Polygon1,best=1,plotEn=1, Projection,...){
@@ -70,10 +70,10 @@ GooglePlot <- function(result,Polygon1,best=1,plotEn=1, Projection,...){
 
   ## Set the splitting parameters
   if (plotEn == 1) {
-    en = "EnergyOverall"
+    en <- "EnergyOverall"
   }
   if (plotEn == 2) {
-    en = "Parkfitness"
+    en <- "Parkfitness"
   }
 
   ## Split resulting individuals
@@ -83,8 +83,13 @@ GooglePlot <- function(result,Polygon1,best=1,plotEn=1, Projection,...){
 
   ## Input reference systems
   if (missing(Projection)) {
-    ProjLAEA = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
-    +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+    if (is.na(proj4string(Polygon1))){
+      ProjLAEA <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
+      +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+      raster::crs(Polygon1) <- raster::crs(ProjLAEA)
+    } else {
+      ProjLAEA <- sp::proj4string(Polygon1)
+    }
   } else {
     ProjLAEA <- Projection;
   }
@@ -98,25 +103,59 @@ GooglePlot <- function(result,Polygon1,best=1,plotEn=1, Projection,...){
 
   ## Take the resulting individual coordinates and project them to Lat/Lon. Used for Google Mapss
   PointSol <- data.frame(dplyr::select(Solution,X,Y)); names(PointSol) <- c("lon","lat")
+
   PointSol1 <- sp::SpatialPoints(sp::coordinates(PointSol), proj4string = raster::crs(ProjLAEA))
   PointSol1 <- sp::spTransform(PointSol1, CRSobj = raster::crs(ProjLonLat))
   PointSol1 <- as.data.frame(PointSol1)
 
   ## Create a Google static map and plot it
   arguments <- list(...);
-  plT <- (paste(arguments))
-  if (length(plT)==0){plT <- TRUE}
+
+  zoom= 15
+  maptype = "hybrid"
+  col = "red"
+  cex = 1.3
+  pch = 19
+  size= c(640,640)
+  plT = TRUE
+
+  if (!is.null(arguments$maptype)) {
+    maptype <- arguments$maptype
+  }
+  if (!is.null(arguments$zoom)) {
+    zoom <- arguments$zoom
+  }
+  if (!is.null(arguments$col)) {
+    col <- arguments$col
+  }
+  if (!is.null(arguments$zoom)) {
+    zoom <- arguments$zoom
+  }
+  if (!is.null(arguments$cex)) {
+    cex <- arguments$cex
+  }
+  if (!is.null(arguments$pch)) {
+    pch <- arguments$pch
+  }
+  if (!is.null(arguments$size)) {
+    size <- arguments$size
+  }
+  if (!is.null(arguments$plT)) {
+    plT <- arguments$plT
+  }
+
   if (plT == TRUE){
     map <- RgoogleMaps::GetMap(center = c(raster::extent(rgeos::gCentroid(Polygon1))[4],
-                                          raster::extent(rgeos::gCentroid(Polygon1))[1]), zoom = 13,
-                               size= c(640,640), maptype="satellite",frame = T)
+                                          raster::extent(rgeos::gCentroid(Polygon1))[1]), zoom = zoom,
+                               size= size, maptype=maptype,frame = T)
     RgoogleMaps::PlotOnStaticMap(MyMap = map, lat = PointSol1$lat,
-                                 lon = PointSol1$lon, zoom = 13, size= c(640,640),
-                                 cex = 1.3, pch = 19, col = "red", FUN = points, add = F)
+                                 lon = PointSol1$lon, zoom = zoom, size= size,
+                                 cex = cex, pch = pch, col = col, FUN = points, add = F)
     RgoogleMaps::PlotPolysOnStaticMap(MyMap = map,
                                       polys = sp::SpatialPolygons(Polygon1@polygons,proj4string=Polygon1@proj4string),
                                       border = NULL, lwd = 1, add=T)
   }
+
   invisible(PointSol1)
 }
 
