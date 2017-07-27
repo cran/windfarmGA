@@ -1,7 +1,7 @@
 Package: windfarmGA
 Title: Genetic Algorithm for Wind Farm Layout Optimization
-Version: 1.1
-Date: 2017-06-20
+Version: 1.1.1
+Date: 2017-07-25
 Author: Sebastian Gatscha
 Maintainer: Sebastian Gatscha <sebastian_gatscha@gmx.at>
 Description: The genetic algorithm is designed to optimize small wind farms consisting 
@@ -23,12 +23,13 @@ Imports: rgdal (>= 1.0-4), raster (>= 2.5-2), sp (>= 1.2-2), dplyr (>=
         1.0-26), ggplot2 (>= 2.2.0), RColorBrewer (>= 1.1-2), rgeos (>=
         0.3-11), RgoogleMaps (>= 1.2.0.7), googleVis (>= 0.5.9), rgl
         (>= 0.96.0), leaflet (>= 1.1.0), methods (>= 3.2.5), spatstat
-        (>= 1.42-2), grDevices, graphics, stats, utils
+        (>= 1.42-2), RandomFields (>= 3.1.50), grDevices, graphics,
+        stats, utils
 Suggests: magrittr
 LazyData: TRUE
 License: MIT + file LICENSE
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-07-09 19:46:19 UTC; Bobo
+Packaged: 2017-07-27 21:33:33 UTC; Bobo
 Repository: CRAN
-Date/Publication: 2017-07-09 20:05:20 UTC
+Date/Publication: 2017-07-27 22:38:42 UTC

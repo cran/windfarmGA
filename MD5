@@ -1,13 +1,13 @@
-f990605df0bc4dfc24d5097f23853507 *DESCRIPTION
+b8401e692ff650a2b7467be8a7626601 *DESCRIPTION
 0ce2043e47b467fcc1c7b780c4118c65 *LICENSE
-cd961d0445174d509dc37829d26430ce *NAMESPACE
+3d4abf3b3f0cb413ef7d854a90ebf112 *NAMESPACE
 95a2b78d9a22f9b67c3ccce8f919bdec *R/BaroHoehe.R
 5de3d2baf9e9df567d38464bffe746cf *R/GoogleChromePlot.R
 6645dd9b948bf851d9a2c1e5456e12d3 *R/GooglePlot.R
 a0369c4b5cff0dfa847636df6108d421 *R/GridFilter.R
-4c023a1598dc6cb38dcfdf03560620bb *R/HexaTex.R
+ce17e10a94a3f40e0c8bc69d0ab424bc *R/HexaTex.R
 c5705cf7ae07466429e2de74cae07fba *R/InfluPoints.R
-f98c18de7e54b7e3cf769a564671ea21 *R/PlotWindfarmGA.R
+deaf4d1a2f799178d427d30103bfc00a *R/PlotWindfarmGA.R
 6009288a2309f75fdae76c32c3e58319 *R/PointToLine2.R
 1cb9a9704b79f6c8be08da69dae08e1a *R/StartGA.R
 d323f80acc5cc74a0d27dbab9c8d8d73 *R/VekWincelCalc.R
@@ -19,7 +19,7 @@ ee7f80b0a3234fb4e18140084594b2dd *R/crossover1.R
 292ad9278bd9622cbfbf90608d264af7 *R/genAlgo.R
 f80a5d2e156feae01caf34ae596478e0 *R/getRects.R
 20c36f0e4873fb77dbcd2f731e417a6a *R/heatmapGA.R
-35c19c544c13296d4e295ad7c4d6e48a *R/leafPlot.R
+84c711543ac90ea451d94f30a0ae0674 *R/leafPlot.R
 cfd51acad4584fce854f5a106fde8ef0 *R/mutation.R
 18d0fa859137a5f1fe2e732bc54d0783 *R/plotEvolution.R
 88bcdc5543b12edd8d8ff799f6f6a23e *R/plotResults.R
@@ -36,6 +36,7 @@ f0d16912279c1525f829888819a05b45 *R/selection1.R
 c960970cb691991ce76e57206fe40e53 *R/trimton.R
 5e529449f302f07bc0896bdbc1d9d2a4 *R/windfarmGA.R
 c00deb7b2f5583b7b6e81bc84d2f4e8c *inst/extdata/a_weibull.rda
+4944931452429e8b324759e5b4a36ebb *inst/extdata/cclraster.rda
 b0955ff7fc4ca4891bfeefdfaa30c731 *inst/extdata/clc_legend.csv
 d8263a98e624daba86691bdf2c26f85f *inst/extdata/k_weibull.rda
 d2bc161db3336a651dc54970ff6cb60e *inst/extdata/polygon.rda
@@ -47,7 +48,7 @@ aa16085f738f2ea89f3118d255992415 *man/BaroHoehe.Rd
 155d7af348787b346e6b36fe4466d167 *man/GoogleChromePlot.Rd
 71b4b21e14f770a7dcf1a5fb812c3685 *man/GooglePlot.Rd
 a5b715b0adaf67d18e19e71f35b098fa *man/GridFilter.Rd
-0e71aee5bfb18afd3961d9e4f7545fe9 *man/HexaTex.Rd
+ae1be2e3c4a9f5a613cead36aec04423 *man/HexaTex.Rd
 a2402928cc498b1a40de003f1f056b1e *man/InfluPoints.Rd
 7232c91dfd1e003967fe17b01c371fd8 *man/PlotWindfarmGA.Rd
 ed4df22b20579337d1b8309581d4a682 *man/PointToLine2.Rd
