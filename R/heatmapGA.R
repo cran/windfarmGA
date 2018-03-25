@@ -36,7 +36,9 @@
 #' }
 #' @author Sebastian Gatscha
 heatmapGA <- function(result,si=2,idistw){
-  opar = par(no.readonly = T)
+  parheat <- par(ask=F, no.readonly = T)
+  on.exit(par(parheat))
+  
   par(mfrow=c(1,1))
   
   bpe <- do.call("rbind",result[,'allCoords']);
@@ -80,6 +82,4 @@ heatmapGA <- function(result,si=2,idistw){
                         show.legend = TRUE,size=sqrt(sqrt(bpenew$Sum)),alpha=0.6)
 
   plot1+ggplot2::scale_fill_gradient(low="red", high="green")+ggplot2::coord_equal()
-
-  par(opar)
 }
