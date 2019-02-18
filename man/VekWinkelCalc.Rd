@@ -7,48 +7,44 @@
 VekWinkelCalc(t, o, wkl, distanz, polYgon, plotAngles)
 }
 \arguments{
-\item{t}{A matrix of the current individual with x and y coordinates
-(matrix)}
+\item{t}{A matrix of the current individual with x and y coordinates}
 
-\item{o}{A numeric value indicating the index of the current turbine
-(numeric)}
+\item{o}{A numeric value indicating the index of the current turbine}
 
 \item{wkl}{A numeric value indicating the angle, at which no wake
-influences are considered. Default is 20 degrees. (numeric)}
+influences are considered. Default is 20 degrees.}
 
 \item{distanz}{A numeric value indicating the distance, after which
-the wake effects are considered to be eliminated. Default is 100km.
-(numeric)}
+the wake effects are considered to be eliminated. Default is 100km.}
 
-\item{polYgon}{A shapefile representing the considered area
-(SpatialPolygons)}
+\item{polYgon}{A shapefile representing the considered area}
 
 \item{plotAngles}{A logical variable, which is used to plot the
-distances and angles. Default is FALSE (logical)}
+distances and angles. Default is FALSE}
 }
 \value{
-Returns a data.frame with the distances and angles of
-potentially influencing turbines (data.frame)
+Returns a matrix with the distances and angles of
+potentially influencing turbines
 }
 \description{
-Calculate the relevant distances \code{\link{PointToLine2}}
-and angles \code{\link{WinkelCalc}} for a given turbine location and
-all potentially influencing turbines.
+Calculate distances and angles for a turbine and
+all it's potentially influencing turbines.
 }
 \examples{
-library(sp);library(raster)
+library(sp)
+library(raster)
 
 ## Exemplary input Polygon with 2km x 2km:
- polYgon <- Polygon(rbind(c(0, 0), c(0, 2000), c(2000, 2000), c(2000, 0)))
-polYgon <- Polygons(list(polYgon),1);
+polYgon <- Polygon(rbind(c(0, 0), c(0, 2000), c(2000, 2000), c(2000, 0)))
+polYgon <- Polygons(list(polYgon),1)
 polYgon <- SpatialPolygons(list(polYgon))
 Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
                +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-proj4string(polYgon) <- CRS(Projection); plot(polYgon,axes=TRUE)
+proj4string(polYgon) <- CRS(Projection); plot(polYgon, axes = TRUE)
 
 ## Create a random windfarm with 10 turbines
-t <- as.matrix(cbind(x=runif(10,0,raster::extent(polYgon)[2]),
-     y=runif(10,0,raster::extent(polYgon)[4])))
+t <- as.matrix(cbind(x = runif(10, 0, raster::extent(polYgon)[2]),
+     y = runif(10, 0, raster::extent(polYgon)[4])))
 wnkl <- 20
 distanz <- 100000
 
@@ -56,7 +52,7 @@ distanz <- 100000
 potInfTur <- list()
 for (i in 1:(length(t[,1]))) {
   potInfTur[[i]] <- VekWinkelCalc(t = t, o = i, wkl = wnkl,
-                   distanz = distanz, polYgon = polYgon, plotAngles=TRUE);
+                   distanz = distanz, polYgon = polYgon, plotAngles = TRUE)
 }
 potInfTur
 

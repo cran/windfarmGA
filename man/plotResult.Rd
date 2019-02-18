@@ -9,25 +9,25 @@ plotResult(result, Polygon1, best = 3, plotEn = 1, topographie = FALSE,
 }
 \arguments{
 \item{result}{An output matrix of the function \code{\link{windfarmGA}} or
-\code{\link{genAlgo}}, which has stored all relevant information. (matrix)}
+\code{\link{genAlgo}}, which has stored all relevant information.}
 
-\item{Polygon1}{The considered area as shapefile. (SpatialPolygons)}
+\item{Polygon1}{The considered area as shapefile.}
 
 \item{best}{A numeric value indicating how many of the best individuals
-should be plotted. (numeric)}
+should be plotted.}
 
 \item{plotEn}{A numeric value that indicates if the best energy or
 efficiency output should be plotted. If (plotEn==1) plots the best energy
-solutions and (plotEn==2) plots the best efficiency solutions. (numeric)}
+solutions and (plotEn==2) plots the best efficiency solutions.}
 
 \item{topographie}{A logical value, indicating whether terrain effects
-should be considered and plotted or not. (logical)}
+should be considered and plotted or not.}
 
 \item{Grid}{The grid as SpatialPolygons, which is obtained from
 \code{\link{GridFilter}} and used for plotting.}
 
 \item{Projection}{A desired Projection can be used instead
-of the default Lambert Azimuthal Equal Area Projection. (character)}
+of the default Lambert Azimuthal Equal Area Projection.}
 
 \item{sourceCCLRoughness}{The source to the adapted
 Corine Land Cover legend as .csv file. Only required when terrain
@@ -36,17 +36,17 @@ package (\file{~/extdata/clc_legend.csv}) is taken that was already adapted
 manually.}
 
 \item{sourceCCL}{The source to the Corine Land Cover raster (.tif). Only
-required, when the terrain effect model is activated. (character)}
+required, when the terrain effect model is activated.}
 
 \item{weibullsrc}{A list of Weibull parameter rasters, where the first list
 item must be the shape parameter raster k and the second item must be the
 scale parameter raster a of the Weibull distribution. If no list is given,
 then rasters included in the package are used instead, which currently
-only cover Austria. This variable is only used if weibull==TRUE. (list)}
+only cover Austria. This variable is only used if weibull==TRUE.}
 }
 \value{
 Returns a data.frame of the best (energy/efficiency) individual
-during all iterations. (data.frame)
+during all iterations.
 }
 \description{
 Plot the best resulting solutions of the genetic algorithm.

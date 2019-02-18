@@ -4,27 +4,27 @@
 \alias{trimton}
 \title{Adjust the amount of turbines per windfarm}
 \usage{
-trimton(mut, nturb, allparks, nGrids, trimForce)
+trimton(mut, nturb, allparks, nGrids, trimForce, seed)
 }
 \arguments{
-\item{mut}{A binary matrix with the mutated individuals (matrix)}
+\item{mut}{A binary matrix with the mutated individuals}
 
-\item{nturb}{A numeric value indicating the amount of required turbines
-(numeric)}
+\item{nturb}{A numeric value indicating the amount of required turbines}
 
 \item{allparks}{A data.frame consisting of all individuals of the
-current generation (data.frame)}
+current generation}
 
-\item{nGrids}{A numeric value indicating the total amount of grid cells
-(numeric)}
+\item{nGrids}{A numeric value indicating the total amount of grid cells}
 
 \item{trimForce}{A boolean value which determines which adjustment
 method should be used. TRUE uses a probabilistic approach and
-FALSE uses a random approach (logical)}
+FALSE uses a random approach}
+
+\item{seed}{Set a seed for comparability. Default is NULL}
 }
 \value{
 Returns a binary matrix with the correct amount of turbines
-per individual (matrix)
+per individual
 }
 \description{
 Adjust the mutated individuals to the required amount of
@@ -54,6 +54,7 @@ AmountGrids <- nrow(Grid)
 
 startsel <- StartGA(Grid,10,20);
 wind <- as.data.frame(cbind(ws=12,wd=0))
+wind <- list(wind, probab = 100)
 fit <- fitness(selection = startsel,referenceHeight = 100, RotorHeight=100,
               SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,rot=20, dirspeed = wind,
               srtm_crop="",topograp=FALSE,cclRaster="")

@@ -4,31 +4,31 @@
 \alias{selection1}
 \title{Selection Method}
 \usage{
-selection1(fit, Grid, teil, elitism, nelit, selstate)
+selection1(fit, Grid, teil, elitism, nelit, selstate, verbose)
 }
 \arguments{
-\item{fit}{A list of all fitness-evaluated individuals (list)}
+\item{fit}{A list of all fitness-evaluated individuals}
 
-\item{Grid}{Is the indexed grid output from \code{\link{GridFilter}}
-(data.frame)}
+\item{Grid}{Is the indexed grid output from \code{\link{GridFilter}}}
 
-\item{teil}{A numeric value that determines the selection percentage
-(numeric)}
+\item{teil}{A numeric value that determines the selection percentage}
 
 \item{elitism}{Boolean value which indicates whether elitism should be
-included or not. (logical)}
+included or not.}
 
 \item{nelit}{If \code{elitism} is TRUE, then this input variable
-determines the amount of individuals in the elite group. (numeric)}
+determines the amount of individuals in the elite group.}
 
 \item{selstate}{Determines which selection method is used, "FIX" selects
 a constant percentage and "VAR" selects a variable percentage, depending
-on the development of the fitness values. (character)}
+on the development of the fitness values.}
+
+\item{verbose}{If TRUE, will print out further information.}
 }
 \value{
 Returns list with 2 elements. Element 1 is the binary encoded
 matrix which shows all selected individuals. Element 2 represent the mean
-fitness values of each parental team. (list)
+fitness values of each parental team.
 }
 \description{
 Select a certain amount of individuals and recombine them
@@ -57,18 +57,20 @@ AmountGrids <- nrow(Grid)
 
 startsel <- StartGA(Grid,10,20);
 wind <- as.data.frame(cbind(ws=12,wd=0))
-fit <- fitness(selection = startsel,referenceHeight = 100, RotorHeight=100,
-               SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,rot=20, dirspeed = wind,
-               srtm_crop="",topograp=FALSE,cclRaster="")
+wind <- list(wind, probab = 100)
+fit <- fitness(selection = startsel, referenceHeight = 100, RotorHeight=100,
+               SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,
+               rot = 20, dirspeed = wind, 
+               srtm_crop = "", topograp = FALSE, cclRaster = "")
 allparks <- do.call("rbind",fit);
 
 ## SELECTION
-## print the amount of Individuals selected. Check if the amount of Turbines is as requested.
-selec6best <- selection1(fit, Grid,2, T, 6, "VAR");
-selec6best <- selection1(fit, Grid,2, T, 6, "FIX");
-selec6best <- selection1(fit, Grid,4, F, 6, "FIX");
+## print the amount of Individuals selected. Check if the amount 
+## of Turbines is as requested.
+selec6best <- selection1(fit, Grid, 2, T, 6, "VAR", NULL)
+selec6best <- selection1(fit, Grid, 2, T, 6, "FIX", NULL)
+selec6best <- selection1(fit, Grid, 4, F, 6, "FIX", NULL)
 str(selec6best)
-
 }
 }
 \author{

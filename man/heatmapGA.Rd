@@ -8,13 +8,17 @@ heatmapGA(result, si = 2, idistw)
 }
 \arguments{
 \item{result}{The output matrix of \code{\link{windfarmGA}} or
-\code{\link{genAlgo}}, which has stored all relevant information (matrix)}
+\code{\link{genAlgo}}, which has stored all relevant information}
 
 \item{si}{A numeric value that is used for the sizing of the
-resolution of the heatmap. Default is 2 (numeric)}
+resolution of the heatmap. Default is 2}
 
 \item{idistw}{The inverse distance weighting power. Default is the
-rotor radius from the 'result' values (numeric)}
+rotor radius from the 'result' values}
+}
+\value{
+Invisibly returns a list with the result of the inverse distance
+weighting and an aggregated dataframe of all grid cells
 }
 \description{
 Plot a heatmap of the selected grid cells. Green grid

@@ -5,50 +5,40 @@
 \title{Evaluate the Individual Fitness values}
 \usage{
 fitness(selection, referenceHeight, RotorHeight, SurfaceRoughness, Polygon,
-  resol1, rot, dirspeed, srtm_crop, topograp, cclRaster, weibull, weibullsrc,
-  Parallel, numCluster)
+  resol1, rot, dirspeed, srtm_crop, topograp, cclRaster, weibull, Parallel,
+  numCluster)
 }
 \arguments{
 \item{selection}{A list containing all individuals of the current
-population. (list)}
+population.}
 
 \item{referenceHeight}{The height at which the incoming wind speeds were
-measured. (numeric)}
+measured.}
 
-\item{RotorHeight}{The desired height of the turbine. (numeric)}
+\item{RotorHeight}{The desired height of the turbine.}
 
 \item{SurfaceRoughness}{A surface roughness length of the considered area
-in m. (numeric)}
+in m.}
 
-\item{Polygon}{The considered area as shapefile. (SpatialPolygons)}
+\item{Polygon}{The considered area as shapefile.}
 
-\item{resol1}{The resolution of the grid in meter. (numeric)}
+\item{resol1}{The resolution of the grid in meter.}
 
-\item{rot}{The desired rotor radius in meter. (numeric)}
+\item{rot}{The desired rotor radius in meter.}
 
-\item{dirspeed}{The wind speed and direction data.frame. (data.frame)}
+\item{dirspeed}{The wind data as list.}
 
-\item{srtm_crop}{Logical value that indicates whether the terrain effect
-model is activated (TRUE) or deactivated (FALSE). (logical)}
+\item{srtm_crop}{A list of 3 raster, with 1) the elevation, 2) an orographic
+and 3) a terrain raster. Calculated in \code{\link{genAlgo}}}
 
 \item{topograp}{Logical value that indicates whether the terrain effect
-model is activated (TRUE) or deactivated (FALSE). (logical)}
+model is activated (TRUE) or deactivated (FALSE).}
 
 \item{cclRaster}{A Corine Land Cover raster, that has to be adapted
 previously by hand with the surface roughness lenght for every land cover
-type. Is only used, when the terrain effect model is activated. (raster)}
+type. Is only used, when the terrain effect model is activated.}
 
-\item{weibull}{A logical value that specifies whether to take Weibull
-parameters into account. If weibull==TRUE, the wind speed values from the
-'dirSpeed' data frame are ignored. The algorithm will calculate the mean
-wind speed for every wind turbine according to the Weibull parameters.
-(logical)}
-
-\item{weibullsrc}{A list of Weibull parameter rasters, where the first list
-item must be the shape parameter raster k and the second item must be the
-scale parameter raster a of the Weibull distribution. If no list is given,
-then rasters included in the package are used instead, which currently
-only cover Austria. This variable is only used if weibull==TRUE. (list)}
+\item{weibull}{A raster representing the estimated wind speeds}
 
 \item{Parallel}{Boolean value, indicating whether parallel processing
 should be used. The parallel and doParallel packages are used for parallel 
@@ -61,7 +51,6 @@ of clusters to be used.}
 Returns a list with every individual, consisting of X & Y
 coordinates, rotor radii, the runs and the selected grid cell IDs, and
 the resulting energy outputs, efficiency rates and fitness values.
-(list)
 }
 \description{
 The fitness values of the individuals in the
@@ -85,49 +74,22 @@ plot(Polygon1,axes=TRUE)
 ## Create a uniform and unidirectional wind data.frame and plots the
 ## resulting wind rose
 ## Uniform wind speed and single wind direction
-data.in <- as.data.frame(cbind(ws=12,wd=0))
-# windrosePlot <- plotWindrose(data = data.in, spd = data.in$ws,
-#                dir = data.in$wd, dirres=10, spdmax=20)
+wind <- data.frame(ws = 12, wd = 0)
+# windrosePlot <- plotWindrose(data = wind, spd = wind$ws,
+#                dir = wind$wd, dirres=10, spdmax=20)
 
 ## Calculate a Grid and an indexed data.frame with coordinates and
-## grid cell Ids.
+## grid cell IDs.
 Grid1 <- GridFilter(shape = Polygon1,resol = 200,prop = 1);
 Grid <- Grid1[[1]]
 AmountGrids <- nrow(Grid)
 
+wind <- list(wind, probab = 100)
 startsel <- StartGA(Grid,10,20);
-wind <- as.data.frame(cbind(ws=12,wd=0))
 fit <- fitness(selection = startsel, referenceHeight = 100, RotorHeight=100,
                SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,rot=20,
                dirspeed = wind, srtm_crop="", topograp=FALSE, cclRaster="",
                Parallel = FALSE)
-head(fit)
-
-## Calculate the fitness with parallel processing
-fit <- fitness(selection = startsel, referenceHeight = 100, RotorHeight=100,
-               SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,rot=20,
-               dirspeed = wind, srtm_crop="", topograp=FALSE, cclRaster="",
-               Parallel = TRUE, numCluster = 3)
-head(fit)
-
-## Calculate fitness values with the Weibull parameters included in the
-## package. Only available for Austria.
-fit <- fitness(selection = startsel,referenceHeight = 100, RotorHeight=100,
-              SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,rot=20,
-              dirspeed = wind, srtm_crop="",topograp=FALSE, cclRaster="",
-              weibull=T, Parallel = FALSE)
-head(fit)
-
-## Calculate fitness values with given Weibull rasters.
-library(raster)
-araster <-  "...path.to.../scale_param_weibull.tif"
-kraster <- "...path.to.../shape_param_weibull.tif"
-weibullrasters <- list(raster(kraster), raster(araster))
-
-fit <- fitness(selection = startsel,referenceHeight = 100, RotorHeight=100,
-               SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,rot=20,
-               dirspeed = wind, srtm_crop="",topograp=FALSE,cclRaster="",
-               weibull=T, weibullsrc = weibullrasters, Parallel = FALSE)
 head(fit)
 }
 

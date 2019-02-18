@@ -7,20 +7,20 @@
 HexaTex(Polygon1, size, plotTrue = FALSE)
 }
 \arguments{
-\item{Polygon1}{The SpatialPolygons object (SpatialPolygons)}
+\item{Polygon1}{The SpatialPolygons object}
 
-\item{size}{The side length of an hexagon (numeric)}
+\item{size}{The side length of an hexagon}
 
-\item{plotTrue}{Should the object be plotted (logical)}
+\item{plotTrue}{Should the object be plotted}
 }
 \value{
-Returns a list with an indexed data frame of the point coordinates
-and a SpatialPolygons object of the hexagons (list)
+Returns a list with an indexed matrix of the point coordinates
+and a SpatialPolygons object of the hexagons
 }
 \description{
 The function takes a Polygon and a sizing argument and
-creates a list with an indexed data frame with coordinates
-and a SpatialPolygons object, that consists of hexagonal grid cells.
+creates a list with an indexed matrix with coordinates
+and a SpatialPolygons object, that consists of hexagonal grids
 }
 \examples{
 library(spatstat)
