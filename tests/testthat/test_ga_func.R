@@ -1,9 +1,7 @@
 context("GA Functions")
-library(testthat)
-library(windfarmGA)
 library(sp)
 library(spatstat)
-library(maptools)
+# library(maptools)
 
 ## Function to suppress print/cat outputs
 quiet <- function(x) { 
@@ -15,14 +13,14 @@ quiet <- function(x) {
 test_that("Test Genetic Algorithm Function", {
   ## Data ##############
   Polygon1 <- Polygon(rbind(c(0, 0), c(0, 2000), c(2000, 2000), c(2000, 0)))
-  Polygon1 <- Polygons(list(Polygon1),1);
+  Polygon1 <- Polygons(list(Polygon1),1)
   Polygon1 <- SpatialPolygons(list(Polygon1))
   Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
   +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
   proj4string(Polygon1) <- CRS(Projection)
   
   Polygon2 <- Polygon(rbind(c(0, 0), c(0, 3500), c(1500, 2000), c(2000, 0)))
-  Polygon2 <- Polygons(list(Polygon2),1);
+  Polygon2 <- Polygons(list(Polygon2),1)
   Polygon2 <- SpatialPolygons(list(Polygon2))
   Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
   +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
@@ -131,7 +129,8 @@ test_that("Test Genetic Algorithm Function", {
   rm(HexGrid)
     
   ## TESS2SPDF #############
-  HexaGrid <- spatstat::hextess(maptools::as.owin.SpatialPolygons(Polygon1),s = 100)
+  # HexaGrid <- spatstat::hextess(maptools::as.owin.SpatialPolygons(Polygon1),s = 100)
+  HexaGrid <- spatstat::hextess(windfarmGA:::owin_spatialPolygons(Polygon1),s = 100)
   expect_true(class(HexaGrid)[1] == "tess")
   
   ## Convert the Tesselation to SpatialPolygons
@@ -140,7 +139,7 @@ test_that("Test Genetic Algorithm Function", {
   rm(Hex2spdf, HexaGrid)
   
   ## STARTGA ################################
-  startsel <- StartGA(Grid[[1]], n = 10, nStart = 20);
+  startsel <- StartGA(Grid[[1]], n = 10, nStart = 20)
   expect_is(startsel, "list")
   expect_true(all(sapply(startsel, class) == "matrix"))
   expect_true(all(sapply(startsel, nrow) == 10))
@@ -152,7 +151,7 @@ test_that("Test Genetic Algorithm Function", {
   quiet(expect_error(StartGA(Grid[[1]][1:10,], n = 10, nStart = 20)))
   quiet(expect_error(StartGA(Grid[[1]][1:10,], n = 7, nStart = 20)))
   
-  startsel <- StartGA(Grid[[1]], n = 20, nStart = 25);
+  startsel <- StartGA(Grid[[1]], n = 20, nStart = 25)
   expect_is(startsel, "list")
   expect_true(all(sapply(startsel, class) == "matrix"))
   expect_true(all(sapply(startsel, nrow) == 20))
@@ -160,7 +159,7 @@ test_that("Test Genetic Algorithm Function", {
   expect_output(str(startsel), "List of 25")
   expect_false(any(unlist(sapply(startsel, is.na))))
   
-  startsel <- StartGA(Grid[[1]], n = 20, nStart = 100);
+  startsel <- StartGA(Grid[[1]], n = 20, nStart = 100)
   expect_is(startsel, "list")
   expect_true(all(sapply(startsel, class) == "matrix"))
   expect_true(all(sapply(startsel, nrow) == 20))
@@ -168,7 +167,7 @@ test_that("Test Genetic Algorithm Function", {
   expect_output(str(startsel), "List of 100")
   expect_false(any(unlist(sapply(startsel, is.na))))
   
-  startsel <- StartGA(Grid[[1]], n = 20, nStart = 300);
+  startsel <- StartGA(Grid[[1]], n = 20, nStart = 300)
   expect_is(startsel, "list")
   expect_true(all(sapply(startsel, class) == "matrix"))
   expect_true(all(sapply(startsel, nrow) == 20))
@@ -217,7 +216,7 @@ test_that("Test Genetic Algorithm Function", {
   ## Produce error
   fitNA <- fit
   fitNA[[1]][, "Parkfitness"] <- NA
-  a = lapply(1:length(fitNA), function(i) {
+  a <- lapply(1:length(fitNA), function(i) {
     fitNA[[i]][, "Parkfitness"] <<- NA
   })
   rm(a)
@@ -231,7 +230,7 @@ test_that("Test Genetic Algorithm Function", {
   expect_true(all(selec6best[[2]][,-1] > 0))
   rm(selec6best)
 
-  selec6best <- selection1(fit, Grid[[1]], 2, TRUE, 6, "FIX");
+  selec6best <- selection1(fit, Grid[[1]], 2, TRUE, 6, "FIX")
   expect_output(str(selec6best), "List of 2")
   expect_false(any(unlist(sapply(selec6best, is.na))))
   expect_true(all(unlist(selec6best[[1]][,-1]) %in% c(0,1)))
@@ -310,7 +309,7 @@ test_that("Test Genetic Algorithm Function", {
   expect_error(crossover1(se6 = selec6best, u = 7, uplimit = 500,
                          crossPart = "something"))
 
-  crossOut <- crossover1(selec6best, 3, uplimit = 300, crossPart = "EQU");
+  crossOut <- crossover1(selec6best, 3, uplimit = 300, crossPart = "EQU")
   expect_output(str(crossOut), "num")
   expect_false(any(is.na(crossOut)))
   expect_true(all(crossOut %in% c(0, 1)))
@@ -435,6 +434,12 @@ test_that("Test Genetic Algorithm Function", {
                   nGrids = nrow(Grid[[1]]), trimForce = TRUE, seed = 300)
   expect_true(identical(mut1, mut2))
 
+  mut1 <- trimton(mut = mut, nturb = 5, allparks = allparks,
+                  nGrids = nrow(Grid[[1]]), trimForce = FALSE, seed = 234)
+  mut2 <- trimton(mut = mut, nturb = 5, allparks = allparks,
+                  nGrids = nrow(Grid[[1]]), trimForce = FALSE, seed = 234)
+  expect_true(identical(mut1, mut2))
+  
   ## GETRECTV #####################
   getRectV <- getRects(mut1, Grid[[1]])
   expect_is(getRectV, "list")

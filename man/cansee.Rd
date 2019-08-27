@@ -2,9 +2,9 @@
 % Please edit documentation in R/visibility.R
 \name{cansee}
 \alias{cansee}
-\title{cansee}
+\title{Calculate Visibility between 2 locations}
 \usage{
-cansee(r, xy1, xy2, h1 = 0, h2 = 0)
+cansee(r, xy1, xy2, h1 = 0, h2 = 0, reso)
 }
 \arguments{
 \item{r}{A DEM raster}
@@ -13,17 +13,23 @@ cansee(r, xy1, xy2, h1 = 0, h2 = 0)
 
 \item{xy2}{A vector/matrix with X and Y coordinates for Point 2}
 
-\item{h1}{A numeric giving the extra height offset of Point 1}
+\item{h1}{A numeric giving the extra height offset for Point 1}
 
-\item{h2}{A numeric giving the extra height offset of Point 2}
+\item{h2}{A numeric giving the extra height offset for Point 2}
+
+\item{reso}{The minimal resolution of the DEM raster. It is 
+calculated in \code{viewshed} and passed along.}
 }
 \value{
 A boolean value, indicating if the point (xy2) is visible
 }
 \description{
-Check if point1 (xy1) visible from point2 (xy2) given 
-a certain DEM (r)
+Check if point 1 is visible from point 2 given
+  a certain elevation model
 }
-\author{
-Sebastian Gatscha
+\seealso{
+Other Viewshed Analysis: \code{\link{interpol_view}},
+  \code{\link{plot_viewshed}}, \code{\link{rasterprofile}},
+  \code{\link{viewTo}}, \code{\link{viewshed}}
 }
+\concept{Viewshed Analysis}

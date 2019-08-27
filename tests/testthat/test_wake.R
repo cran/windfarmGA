@@ -1,6 +1,5 @@
-library(testthat)
+context("Test Wake Functions")
 library(sp)
-library(windfarmGA)
 library(raster)
 # devtools::load_all()
 
@@ -9,11 +8,11 @@ test_that("Test Wake Functions", {
   ###########################################
   polYgon <- Polygon(rbind(c(0, 0), c(0, 2000),
                            c(2000, 2000), c(2000, 0)))
-  polYgon <- Polygons(list(polYgon),1);
+  polYgon <- Polygons(list(polYgon),1)
   polYgon <- SpatialPolygons(list(polYgon))
   Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
   +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-  proj4string(polYgon) <- CRS(Projection);
+  proj4string(polYgon) <- CRS(Projection)
   wnkl <- 20; dist <- 100000; dirct <- 0
   t <- as.matrix(cbind(x = runif(10,0,raster::extent(polYgon)[2]),
                        y = runif(10,0,raster::extent(polYgon)[4])))
@@ -91,7 +90,7 @@ test_that("Test Wake Functions", {
   ## Test VekWinkelCalc Function --------------
   ###########################################
   distanz <- 100000
-  colnms = c("Ay","Cx","Cy","Laenge_C","Laenge_B","Laenge_A","alpha","betha","gamma")
+  colnms <- c("Ay","Cx","Cy","Laenge_C","Laenge_B","Laenge_A","alpha","betha","gamma")
   ## Evaluate and plot for every turbine all other potentially influencing turbines
   potInfTur <- list()
   for (i in 1:(length(t[,1]))) {
@@ -215,6 +214,15 @@ test_that("Test Wake Functions", {
   
   expect_false(any(unlist(sapply(resCalcEn, is.na))))
   expect_true(all(df[, "Rect_ID"] %in% resGrid[[1]][, "ID"]))
+  
+  resCalcEn <- calculateEn(sel = resStartGA[[1]], referenceHeight = 50,
+                           RotorHeight = 50, SurfaceRoughness = 0.14, wnkl = 20,
+                           distanz = 100000, resol = 200,dirSpeed = data.in,
+                           RotorR = 50, polygon1 = polYgon, 
+                           topograp = FALSE, weibull = FALSE, plotit = TRUE)
+  
+  expect_output(str(resCalcEn), "List of 1")
+  expect_true(class(resCalcEn[[1]]) == "matrix")
   rm(resCalcEn, df)
   
   ## 2 Wind Directions 
@@ -222,7 +230,8 @@ test_that("Test Wake Functions", {
   resCalcEn <- calculateEn(sel=resStartGA[[1]],referenceHeight= 50,
                            RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
                            distanz = 100000, resol = 200,dirSpeed = data.in,
-                           RotorR = 50, polygon1 = polYgon, topograp = FALSE, weibull = FALSE)
+                           RotorR = 50, polygon1 = polYgon, topograp = FALSE, 
+                           weibull = FALSE)
   
   expect_output(str(resCalcEn), "List of 2")
   expect_true(class(resCalcEn[[1]]) == "matrix")
@@ -232,4 +241,22 @@ test_that("Test Wake Functions", {
   
   expect_false(any(unlist(sapply(resCalcEn, is.na))))
   expect_true(all(df[, "Rect_ID"] %in% resGrid[[1]][, "ID"]))
+  
+  
+  ## Polygon with Holes is not plotted correctly (Hole is omitted)
+  # windraster <- raster::rasterize(hole_shape, raster::raster(
+  #   raster::extent(hole_shape),
+  #   ncol = 180, nrow = 180), field = 1)
+  # data.in <- data.frame(ws = c(12,12), wd = c(0,90))
+  # Rotor <- 50; fcrR <- 3
+  # resGrid <- GridFilter(shape = hole_shape, resol = Rotor * fcrR, prop = 1,
+  #                       plotGrid = FALSE)
+  # resStartGA <- StartGA(Grid = resGrid[[1]], n = 15, nStart = 100)
+  # resCalcEn <- calculateEn(sel = resStartGA[[1]], referenceHeight = 50,
+  #                          RotorHeight = 50, SurfaceRoughness = 0.14, wnkl = 20,
+  #                          distanz = 100000, resol = 200,dirSpeed = data.in,
+  #                          RotorR = 50, polygon1 = hole_shape, 
+  #                          topograp = FALSE, weibull=FALSE,
+  #                          plotit = TRUE)
+
 })

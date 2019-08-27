@@ -72,6 +72,11 @@ test_that("Test Basic Functions", {
   res12 <- isSpatial(coords_df)
   expect_true(class(res12)[1] == "SpatialPolygons")
   expect_true(identical(res0@bbox, res12@bbox))
+  
+  colnames(coords_df) <- c("asd","fasf")
+  res12 <- isSpatial(coords_df)
+  expect_true(class(res12)[1] == "SpatialPolygons")
+  expect_true(identical(res0@bbox, res12@bbox))
 
   ## Simple Feature
   simple_feature <- sf::st_as_sf(spatial_polygon)
@@ -84,7 +89,7 @@ test_that("Test Basic Functions", {
   wind_df <- data.frame(ws = c(12, 30, 45), 
                         wd = c(0, 90, 150),
                         probab = 30:32)
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_true(all(a[[1]][, "ws"] == wind_df$ws))
   expect_true(all(a[[1]][, "wd"] == unique(wind_df$wd)))
@@ -96,7 +101,7 @@ test_that("Test Basic Functions", {
                         direction = c(90, 90, 150)
                         ,probab = c(10, 20, 60)
   )
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_true(all(a[[1]][, "ws"] == wind_df$ws))
   expect_true(all(a[[1]][, "wd"] == unique(wind_df$wd)))
@@ -108,7 +113,7 @@ test_that("Test Basic Functions", {
                         direction = c(92, 90, 94, 95)
                         ,probab = c(10, 20, 140, 10)
   )
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_false(all(a[[1]][, "ws"] == wind_df$speed))
@@ -119,7 +124,7 @@ test_that("Test Basic Functions", {
   wind_df <- data.frame(speed = c(12, 30, 45), 
                         direction = c(400, 90, 150)
   )
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_false(all(a[[1]][, "ws"] == wind_df$speed))
@@ -130,7 +135,7 @@ test_that("Test Basic Functions", {
   wind_df <- data.frame(speed = c(12, 30, 45), 
                         direction = c(90, 90, 150)
   )
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_false(all(a[[1]][, "ws"] %in% wind_df$speed))
@@ -140,7 +145,7 @@ test_that("Test Basic Functions", {
   
   wind_df <- data.frame(c(12, 30, 45), 
                         c(0, 90, 150))
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_true(all(a[[1]][, "ws"] == wind_df[, 1]))
@@ -152,7 +157,7 @@ test_that("Test Basic Functions", {
                         c(0, 90, 150),
                         c(10, 20, 70))
   wind_df <- as.matrix(wind_df)
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_true(all(a[[1]][, "ws"] == wind_df[, 1]))
@@ -165,7 +170,7 @@ test_that("Test Basic Functions", {
                         c(0, 90, 150),
                         c(10, 20, 140))
   wind_df <- as.matrix(wind_df)
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_true(all(a[[1]][, "ws"] == wind_df[,1]))
@@ -175,7 +180,16 @@ test_that("Test Basic Functions", {
   expect_true(sum(a[[2]]) == 100)
   
   colnames(wind_df) <- NULL
-  a = windata_format(wind_df)
+  a <- windata_format(wind_df)
+  expect_false(all(sapply(a, anyNA)))
+  expect_false(any(a[[1]][, "wd"] > 360))
+  expect_true(all(a[[1]][, "ws"] == wind_df[, 1]))
+  expect_true(all(a[[1]][, "wd"] %in% unique(wind_df[, 2])))
+  expect_false(any(duplicated(a[[1]][, "wd"])))
+  expect_true(sum(a[[2]]) == 100)
+  
+  wind_df <- wind_df[,1:2]
+  a <- windata_format(wind_df)
   expect_false(all(sapply(a, anyNA)))
   expect_false(any(a[[1]][, "wd"] > 360))
   expect_true(all(a[[1]][, "ws"] == wind_df[, 1]))

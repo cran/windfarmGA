@@ -1,23 +1,23 @@
 #' @title Adjust the amount of turbines per windfarm
 #' @name trimton
 #' @description  Adjust the mutated individuals to the required amount of
-#' turbines.
+#'   turbines.
 #'
-#' @importFrom stats aggregate
 #' @export
 #'
-#' @param mut A binary matrix with the mutated individuals 
+#' @param mut A binary matrix with the mutated individuals
 #' @param nturb A numeric value indicating the amount of required turbines
-#' @param allparks A data.frame consisting of all individuals of the
-#' current generation
+#' @param allparks A data.frame consisting of all individuals of the current
+#'   generation
 #' @param nGrids A numeric value indicating the total amount of grid cells
-#' @param trimForce A boolean value which determines which adjustment
-#' method should be used. TRUE uses a probabilistic approach and
-#' FALSE uses a random approach 
+#' @param trimForce A boolean value which determines which adjustment method
+#'   should be used. TRUE uses a probabilistic approach and FALSE uses a random
+#'   approach
 #' @param seed Set a seed for comparability. Default is NULL
-#' 
-#' @return Returns a binary matrix with the correct amount of turbines
-#' per individual 
+#'
+#' @family Genetic Algorithm Functions
+#' @return Returns a binary matrix with the correct amount of turbines per
+#'   individual
 #' @examples \donttest{
 #' ## Create a random rectangular shapefile
 #' library(sp)
@@ -27,7 +27,6 @@
 #' Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
 #' +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 #' proj4string(Polygon1) <- CRS(Projection)
-#' plot(Polygon1,axes=TRUE)
 #'
 #' ## Create a uniform and unidirectional wind data.frame and plots the
 #' ## resulting wind rose
@@ -35,11 +34,11 @@
 #' data.in <- as.data.frame(cbind(ws=12,wd=0))
 #'
 #' ## Calculate a Grid and an indexed data.frame with coordinates and grid cell Ids.
-#' Grid1 <- GridFilter(shape = Polygon1,resol = 200,prop = 1);
+#' Grid1 <- grid_area(shape = Polygon1,resol = 200,prop = 1);
 #' Grid <- Grid1[[1]]
 #' AmountGrids <- nrow(Grid)
 #'
-#' startsel <- StartGA(Grid,10,20);
+#' startsel <- init_population(Grid,10,20);
 #' wind <- as.data.frame(cbind(ws=12,wd=0))
 #' wind <- list(wind, probab = 100)
 #' fit <- fitness(selection = startsel,referenceHeight = 100, RotorHeight=100,
@@ -50,35 +49,34 @@
 #' ## SELECTION
 #' ## print the amount of Individuals selected.
 #' ## Check if the amount of Turbines is as requested.
-#' selec6best <- selection1(fit, Grid,2, T, 6, "VAR");
-#' selec6best <- selection1(fit, Grid,2, T, 6, "FIX");
-#' selec6best <- selection1(fit, Grid,4, F, 6, "FIX");
+#' selec6best <- selection(fit, Grid,2, T, 6, "VAR");
+#' selec6best <- selection(fit, Grid,2, T, 6, "FIX");
+#' selec6best <- selection(fit, Grid,4, F, 6, "FIX");
 #'
 #' ## CROSSOVER
 #' ## u determines the amount of crossover points,
 #' ## crossPart determines the method used (Equal/Random),
 #' ## uplimit is the maximum allowed permutations
-#' crossOut <- crossover1(selec6best, 2, uplimit = 300, crossPart="RAN");
-#' crossOut <- crossover1(selec6best, 7, uplimit = 500, crossPart="RAN");
-#' crossOut <- crossover1(selec6best, 3, uplimit = 300, crossPart="EQU");
+#' crossOut <- crossover(selec6best, 2, uplimit = 300, crossPart="RAN");
+#' crossOut <- crossover(selec6best, 7, uplimit = 500, crossPart="RAN");
+#' crossOut <- crossover(selec6best, 3, uplimit = 300, crossPart="EQU");
 #'
 #' ## MUTATION
 #' ## Variable Mutation Rate is activated if more than 2 individuals represent
 #' ## the current best solution.
-#' mut <- mutation(a = crossOut, p = 0.3);
-#' mut==crossOut
+#' mut <- mutation(a = crossOut, p = 0.3, NULL);
 #'
 #' ## TRIMTON
 #' ## After Crossover and Mutation, the amount of turbines in a windpark change and have to be
 #' ## corrected to the required amount of turbines.
 #' mut1 <- trimton(mut = mut, nturb = 10, allparks = allparks, nGrids = AmountGrids,
 #'                 trimForce=FALSE)
+#' colSums(mut)
 #' colSums(mut1)
 #'
 #'}
-#' @author Sebastian Gatscha
 trimton           <- function(mut, nturb, allparks, nGrids, trimForce, seed){
-  if (missing(seed)) {seed = NULL}
+  if (missing(seed)) {seed <- NULL}
   k <- 0.5
   nGrids1 <- 1:nGrids
 
@@ -104,18 +102,18 @@ trimton           <- function(mut, nturb, allparks, nGrids, trimForce, seed){
       RectID = welche,
       Prop = rep(mean(indivprop[,'AbschGesamt']), length(welche)))
     if (trimForce) {
-      propexi <- indivprop[indivprop[,'Rect_ID'] %in% welche,];
+      propexi <- indivprop[indivprop[,'Rect_ID'] %in% welche,]
       npt  <- (1 + ((max(propexi[,'AbschGesamt']) - propexi[,'AbschGesamt']) / (1 + max(propexi[,'AbschGesamt']))))
       npt0 <- (1 + ((max(propexi[,'Parkfitness']) - propexi[,'Parkfitness']) / (1 + max(propexi[,'Parkfitness'])))) ^ k
       NewProb <- 1 / (npt / npt0)
-      propwelche[welche %in%  indivprop[,'Rect_ID'], 'Prop'] <- NewProb;
+      propwelche[welche %in%  indivprop[,'Rect_ID'], 'Prop'] <- NewProb
     }
 
     propwelcheN <-  cbind(
       Rect_ID = nGrids1,
       Prop = rep(min(indivprop[,'AbschGesamt']), nGrids))
     if (trimForce) {
-      propexiN <- indivprop[indivprop[,'Rect_ID'] %in% nGrids1,];
+      propexiN <- indivprop[indivprop[,'Rect_ID'] %in% nGrids1,]
       npt1 <- (1 + ((max(propexiN[,'AbschGesamt']) - propexiN[,'AbschGesamt']) / (1 + max(propexiN[,'AbschGesamt']))))
       npt2 <- (1 + ((max(propexiN[,'Parkfitness']) - propexiN[,'Parkfitness']) / (1 + max(propexiN[,'Parkfitness'])))) ^ k
       NewProb1 <- npt1 / npt2

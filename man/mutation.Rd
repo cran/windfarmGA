@@ -4,7 +4,7 @@
 \alias{mutation}
 \title{Mutation Method}
 \usage{
-mutation(a, p, seed)
+mutation(a, p, seed = NULL)
 }
 \arguments{
 \item{a}{The binary matrix of all individuals.}
@@ -17,8 +17,8 @@ mutation(a, p, seed)
 Returns a binary matrix with mutated genes.
 }
 \description{
-Mutate the genes of every chromosome or individual with
-low probability.
+Mutate the genes of every chromosome or individual with low
+  probability.
 }
 \examples{
 ## Create 4 random individuals with binary values
@@ -29,16 +29,20 @@ a <- cbind(bin=sample(c(0,1),20,replace=TRUE,prob = c(70,30)),
 a
 
 ## Mutate the individuals with a low percentage
-aMut <- mutation(a,0.1)
+aMut <- mutation(a,0.1, NULL)
 ## Check which values are not like the originals
 a==aMut
 
 ## Mutate the individuals with a high percentage
-aMut <- mutation(a,0.4)
+aMut <- mutation(a,0.4, NULL)
 ## Check which values are not like the originals
 a==aMut
 
 }
-\author{
-Sebastian Gatscha
+\seealso{
+Other Genetic Algorithm Functions: \code{\link{crossover}},
+  \code{\link{fitness}}, \code{\link{genetic_algorithm}},
+  \code{\link{init_population}}, \code{\link{selection}},
+  \code{\link{trimton}}, \code{\link{windfarmGA}}
 }
+\concept{Genetic Algorithm Functions}

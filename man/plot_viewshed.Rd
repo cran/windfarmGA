@@ -2,17 +2,19 @@
 % Please edit documentation in R/visibility.R
 \name{plot_viewshed}
 \alias{plot_viewshed}
-\title{plot_viewshed}
+\title{Plot viewshed results}
 \usage{
-plot_viewshed(res, legend = FALSE)
+plot_viewshed(res, legend = FALSE, ...)
 }
 \arguments{
 \item{res}{The resulting list from viewshed}
 
 \item{legend}{Plot a legend? Default is FALSE}
+
+\item{...}{Is passed along to \code{\link[raster]{plot}}}
 }
 \description{
-Plot the result of viewshed
+Plot the result of \code{\link{viewshed}}
 }
 \examples{
 \dontrun{
@@ -27,14 +29,30 @@ Projection <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
 proj4string(Polygon1) <- CRS(Projection)
 DEM_meter <- getDEM(Polygon1)
 
-sample_POI <- spsample(DEM_meter[[2]], n = ncell(DEM_meter[[1]]), type = "regular")
-sample_xy <- coordinates(sample_POI)
-
 turbloc = spsample(DEM_meter[[2]], 10, type = "random");
-res <- viewshed(r = DEM_meter[[1]], shape=DEM_meter[[2]], turbine_locs = turbloc,  h1=1.8, h2=50)
+res <- viewshed(r = DEM_meter[[1]], shape = DEM_meter[[2]], turbine_locs = turbloc,  
+                h1 = 1.8, h2 = 50)
 plot_viewshed(res)
+
+## ... Arguments are past on to raster::plot
+plot_viewshed(res, legend = T, interpolate=T, colNA="black", 
+              col = topo.colors(15))
 }
 }
-\author{
-Sebastian Gatscha
+\seealso{
+Other Viewshed Analysis: \code{\link{cansee}},
+  \code{\link{interpol_view}}, \code{\link{rasterprofile}},
+  \code{\link{viewTo}}, \code{\link{viewshed}}
+
+Other Plotting Functions: \code{\link{interpol_view}},
+  \code{\link{plot_cloud}}, \code{\link{plot_development}},
+  \code{\link{plot_evolution}},
+  \code{\link{plot_fitness_evolution}},
+  \code{\link{plot_heatmap}},
+  \code{\link{plot_parkfitness}},
+  \code{\link{plot_result}}, \code{\link{plot_windfarmGA}},
+  \code{\link{plot_windrose}},
+  \code{\link{random_search_single}}
 }
+\concept{Plotting Functions}
+\concept{Viewshed Analysis}
