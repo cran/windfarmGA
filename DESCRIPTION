@@ -1,7 +1,6 @@
 Package: windfarmGA
 Title: Genetic Algorithm for Wind Farm Layout Optimization
-Version: 2.2.2
-Date: 2019-08-25
+Version: 2.2.3
 Authors@R: c(
     person("Sebastian", "Gatscha", , email="sebastian_gatscha@gmx.at", c("aut", "cre"))
     )
@@ -23,7 +22,7 @@ Encoding: UTF-8
 X-schema.org-keywords: windfarm-layout, optimization,
         genetic-algorithm, renewable-energy, r, rstats, r-package
 NeedsCompilation: yes
-Packaged: 2019-08-27 17:25:26 UTC; Bobo
+Packaged: 2019-12-16 16:06:15 UTC; gatscha
 Author: Sebastian Gatscha [aut, cre]
 Repository: CRAN
-Date/Publication: 2019-08-27 23:30:02 UTC
+Date/Publication: 2019-12-16 17:30:02 UTC
