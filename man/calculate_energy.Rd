@@ -12,7 +12,6 @@ calculate_energy(
   wnkl,
   distanz,
   polygon1,
-  resol,
   RotorR,
   dirSpeed,
   srtm_crop,
@@ -23,28 +22,24 @@ calculate_energy(
 )
 }
 \arguments{
-\item{sel}{A data.frame of an individual of the current population
-(data.frame)}
+\item{sel}{A matrix of an individual of the current population}
 
 \item{referenceHeight}{The height at which the incoming wind speeds were
-measured (numeric)}
+measured. Default is \code{RotorHeight}}
 
-\item{RotorHeight}{The desired height of the turbines}
+\item{RotorHeight}{The height of the turbine hub}
 
-\item{SurfaceRoughness}{A surface roughness length of the considered area in
-m. If the terrain effect model is activated, a surface roughness will be
-calculated for every grid cell with the elevation and land cover
-information}
+\item{SurfaceRoughness}{A surface roughness length in meters. 
+With the terrain effect model, a surface roughness is calculated for every 
+grid cell using the elevation and land cover data. Default is \code{0.3}}
 
-\item{wnkl}{Indicates the angle at which no wake influences are considered
-(numeric)}
+\item{wnkl}{The angle from which wake influences are considered to be 
+negligible}
 
-\item{distanz}{Indicates the distance after which the wake effects are
-considered to be eliminated}
+\item{distanz}{The distance after which wake effects are considered
+to be eliminated}
 
-\item{polygon1}{The considered area as shapefile}
-
-\item{resol}{The resolution of the grid in meter}
+\item{polygon1}{The considered area as Simple Feature Polygon}
 
 \item{RotorR}{The desired rotor radius in meter}
 
@@ -53,23 +48,27 @@ considered to be eliminated}
 \item{srtm_crop}{A list of 3 raster, with 1) the elevation, 2) an orographic
 and 3) a terrain raster. Calculated in \code{\link{genetic_algorithm}}}
 
-\item{topograp}{Logical value that indicates whether the terrain effect model
-is activated (TRUE) or deactivated (FALSE)}
+\item{topograp}{Boolean value, which indicates if the terrain effect model
+should be enabled or not. Default is \code{FALSE}}
 
-\item{cclRaster}{A Corine Land Cover raster that has to be downloaded
-previously. See also the details at \code{\link{windfarmGA}} The raster
-will only be used when the terrain effect model is activated. (raster)}
+\item{cclRaster}{A Corine Land Cover raster, that has to be adapted
+previously by hand with the surface roughness length for every land cover
+type. Is only used, when the terrain effect model is activated.}
 
-\item{weibull}{A raster representing the estimated wind speeds}
+\item{weibull}{A boolean value that specifies whether to take Weibull
+parameters into account. If \code{TRUE}, the wind speed values 
+of \code{vdirspe} are ignored. The algorithm will calculate the mean
+wind speed for every wind turbine according to the Weibull parameters.
+Default is \code{FALSE}}
 
-\item{plotit}{Logical value. If TRUE, the process will be plotted. 
-Default is FALSE.}
+\item{plotit}{If \code{TRUE}, the process will be plotted. 
+Default is \code{FALSE}}
 }
 \value{
 Returns a list of an individual of the current generation with
   resulting wake effects, energy outputs, efficiency rates for every wind
-  direction. The length of the list will be the amount of incoming wind
-  directions.
+  direction. The length of the list corresponds to the number of different
+  wind directions.
 }
 \description{
 Calculate the energy output and efficiency rates of an
@@ -79,14 +78,14 @@ Calculate the energy output and efficiency rates of an
 }
 \examples{
 \dontrun{
-## Create a random shapefile
-library(sp)
-Polygon1 <- Polygon(rbind(c(4498482, 2668272), c(4498482, 2669343),
-                    c(4499991, 2669343), c(4499991, 2668272)))
-Polygon1 <- Polygons(list(Polygon1),1);
-Polygon1 <- SpatialPolygons(list(Polygon1))
-Projection <- "+init=epsg:3035"
-proj4string(Polygon1) <- CRS(Projection)
+## Create a random Polygon
+library(sf)
+Polygon1 <- sf::st_as_sf(sf::st_sfc(
+  sf::st_polygon(list(cbind(
+    c(4498482, 4498482, 4499991, 4499991, 4498482),
+    c(2668272, 2669343, 2669343, 2668272, 2668272)))), 
+  crs = 3035
+))
 
 ## Create a uniform and unidirectional wind data.frame and plot the
 ## resulting wind rose
@@ -96,10 +95,10 @@ windrosePlot <- plot_windrose(data = data.in, spd = data.in$ws,
 
 ## Assign the rotor radius and a factor of the radius for grid spacing.
 Rotor= 50; fcrR= 3
-resGrid <- grid_area(shape = Polygon1, resol = Rotor*fcrR, prop=1,
+resGrid <- grid_area(shape = Polygon1, size = Rotor*fcrR, prop=1,
                       plotGrid = TRUE)
 ## Assign the indexed data frame to new variable. Element 2 of the list
-## is the grid, saved as SpatialPolygon.
+## is the grid, saved as Simple Feature Polygons.
 resGrid1 <- resGrid[[1]]
 
 ## Create an initial population with the indexed Grid, 15 turbines and
@@ -113,7 +112,7 @@ plot(Polygon1); points(initpop[[1]][,'X'],initpop[[1]][,'Y'], pch=20,cex=2)
 plot(resGrid[[2]], add = TRUE)
 resCalcEn <- calculate_energy(sel=initpop[[1]],referenceHeight= 50,
                    RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
-                   distanz = 100000, resol = 200,dirSpeed = data.in,
+                   distanz = 100000, dirSpeed = data.in,
                    RotorR = 50, polygon1 = Polygon1, topograp = FALSE,
                    weibull = FALSE)
 resCalcEn <- as.data.frame(resCalcEn)
@@ -131,7 +130,7 @@ windrosePlot <- plot_windrose(data = data.in10, spd = data.in10$ws,
 ## wind direction.
 resCalcEn <- calculate_energy(sel=initpop[[1]],referenceHeight= 50,
                    RotorHeight= 50, SurfaceRoughness = 0.14,wnkl = 20,
-                   distanz = 100000, resol = 200,dirSpeed = data.in10,
+                   distanz = 100000, dirSpeed = data.in10,
                    RotorR = 50, polygon1 = Polygon1, topograp = FALSE,
                    weibull = FALSE)
 }

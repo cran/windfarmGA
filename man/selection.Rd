@@ -13,15 +13,15 @@ selection(fit, Grid, teil, elitism, nelit, selstate, verbose)
 
 \item{teil}{A numeric value that determines the selection percentage}
 
-\item{elitism}{Boolean value which indicates whether elitism should be
-included or not.}
+\item{elitism}{Boolean value, which indicates whether elitism should be
+activated or not. Default is \code{TRUE}}
 
-\item{nelit}{If \code{elitism} is TRUE, then this input variable determines
-the amount of individuals in the elite group.}
+\item{nelit}{If \code{elitism} is TRUE, this input determines the amount 
+of individuals in the elite group. Default is 7}
 
 \item{selstate}{Determines which selection method is used, "FIX" selects a
 constant percentage and "VAR" selects a variable percentage, depending on
-the development of the fitness values.}
+the development of the fitness values. Default is "FIX"}
 
 \item{verbose}{If TRUE, will print out further information.}
 }
@@ -40,16 +40,17 @@ Select a certain amount of individuals and recombine them to
 }
 \examples{
 \dontrun{
-## Create a random rectangular shapefile
-library(sp)
-Polygon1 <- Polygon(rbind(c(0, 0), c(0, 2000), c(2000, 2000), c(2000, 0)))
-Polygon1 <- Polygons(list(Polygon1),1);
-Polygon1 <- SpatialPolygons(list(Polygon1))
-Projection <- "+init=epsg:3035"
-proj4string(Polygon1) <- CRS(Projection)
+## Exemplary input Polygon with 2km x 2km:
+library(sf)
+Polygon1 <- sf::st_as_sf(sf::st_sfc(
+  sf::st_polygon(list(cbind(
+    c(4498482, 4498482, 4499991, 4499991, 4498482),
+    c(2668272, 2669343, 2669343, 2668272, 2668272)))), 
+  crs = 3035
+))
 
 ## Calculate a Grid and an indexed data.frame with coordinates and grid cell Ids.
-Grid1 <- grid_area(shape = Polygon1,resol = 200,prop = 1);
+Grid1 <- grid_area(shape = Polygon1, size = 200, prop = 1);
 Grid <- Grid1[[1]]
 AmountGrids <- nrow(Grid)
 
@@ -57,7 +58,7 @@ startsel <- init_population(Grid,10,20);
 wind <- as.data.frame(cbind(ws=12,wd=0))
 wind <- list(wind, probab = 100)
 fit <- fitness(selection = startsel, referenceHeight = 100, RotorHeight=100,
-               SurfaceRoughness=0.3,Polygon = Polygon1, resol1 = 200,
+               SurfaceRoughness=0.3, Polygon = Polygon1, resol1 = 200,
                rot = 20, dirspeed = wind, 
                srtm_crop = "", topograp = FALSE, cclRaster = "")
 allparks <- do.call("rbind",fit);

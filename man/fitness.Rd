@@ -25,12 +25,13 @@ fitness(
 \item{selection}{A list containing all individuals of the current population.}
 
 \item{referenceHeight}{The height at which the incoming wind speeds were
-measured.}
+measured. Default is \code{RotorHeight}}
 
-\item{RotorHeight}{The desired height of the turbine.}
+\item{RotorHeight}{The height of the turbine hub}
 
-\item{SurfaceRoughness}{A surface roughness length of the considered area in
-m.}
+\item{SurfaceRoughness}{A surface roughness length in meters. 
+With the terrain effect model, a surface roughness is calculated for every 
+grid cell using the elevation and land cover data. Default is \code{0.3}}
 
 \item{Polygon}{The considered area as shapefile.}
 
@@ -43,8 +44,8 @@ m.}
 \item{srtm_crop}{A list of 3 raster, with 1) the elevation, 2) an orographic
 and 3) a terrain raster. Calculated in \code{\link{genetic_algorithm}}}
 
-\item{topograp}{Logical value that indicates whether the terrain effect model
-is activated (TRUE) or deactivated (FALSE).}
+\item{topograp}{Boolean value, which indicates if the terrain effect model
+should be enabled or not. Default is \code{FALSE}}
 
 \item{cclRaster}{A Corine Land Cover raster, that has to be adapted
 previously by hand with the surface roughness length for every land cover
@@ -52,12 +53,12 @@ type. Is only used, when the terrain effect model is activated.}
 
 \item{weibull}{A raster representing the estimated wind speeds}
 
-\item{Parallel}{Boolean value, indicating whether parallel processing should
-be used. The parallel and doParallel packages are used for parallel
-processing.}
+\item{Parallel}{A boolean value, indicating whether parallel processing should
+be used. The *parallel* and *doParallel* packages are used for parallel
+processing. Default is \code{FALSE}}
 
-\item{numCluster}{If Parallel is TRUE, this variable defines the number of
-clusters to be used.}
+\item{numCluster}{If \code{Parallel} is TRUE, this variable defines the 
+number of clusters to be used. Default is \code{2}}
 }
 \value{
 Returns a list with every individual, consisting of X & Y
@@ -65,21 +66,21 @@ Returns a list with every individual, consisting of X & Y
   resulting energy outputs, efficiency rates and fitness values.
 }
 \description{
-The fitness values of the individuals in the current population
-  are calculated after having evaluated their energy outputs in
+The fitness of all individuals in the current population
+  is calculated after their energy output has been evaluated in
   \code{\link{calculate_energy}}. This function reduces the resulting energy
-  outputs to a single fitness value for every individual.
+  outputs to a single fitness value for each individual.
 }
 \examples{
 \donttest{
 ## Create a random rectangular shapefile
-library(sp)
-Polygon1 <- Polygon(rbind(c(4498482, 2668272), c(4498482, 2669343),
-                    c(4499991, 2669343), c(4499991, 2668272)))
-Polygon1 <- Polygons(list(Polygon1),1);
-Polygon1 <- SpatialPolygons(list(Polygon1))
-Projection <- "+init=epsg:3035"
-proj4string(Polygon1) <- CRS(Projection)
+library(sf)
+Polygon1 <- sf::st_as_sf(sf::st_sfc(
+  sf::st_polygon(list(cbind(
+    c(4498482, 4498482, 4499991, 4499991, 4498482),
+    c(2668272, 2669343, 2669343, 2668272, 2668272)))), 
+  crs = 3035
+))
 
 ## Create a uniform and unidirectional wind data.frame and plots the
 ## resulting wind rose
@@ -90,7 +91,7 @@ wind <- data.frame(ws = 12, wd = 0)
 
 ## Calculate a Grid and an indexed data.frame with coordinates and
 ## grid cell IDs.
-Grid1 <- grid_area(shape = Polygon1,resol = 200,prop = 1);
+Grid1 <- grid_area(shape = Polygon1, size = 200, prop = 1);
 Grid <- Grid1[[1]]
 AmountGrids <- nrow(Grid)
 
