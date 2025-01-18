@@ -17,8 +17,7 @@ plot_result(
 )
 }
 \arguments{
-\item{result}{The output of \code{\link{windfarmGA}} or
-\code{\link{genetic_algorithm}}}
+\item{result}{The output of \code{\link{genetic_algorithm}}}
 
 \item{Polygon1}{The considered area as SpatialPolygon, SimpleFeature Polygon
 or coordinates as matrix/data.frame}
@@ -45,28 +44,30 @@ was already adapted manually.}
 required when the terrain effect model is activated.}
 
 \item{weibullsrc}{A list of Weibull parameter rasters, where the first list
-item must be the shape parameter raster `k` and the second item must be the
-scale parameter raster `a` of the Weibull distribution. If no list is given,
-then rasters included in the package are used instead, which currently only
-cover Austria. This variable is only used if \code{weibull = TRUE}.}
+item must be the shape parameter raster \code{k} and the second item must be the
+scale parameter raster \code{a} of the Weibull distribution. If no list is
+given, then rasters included in the package are used instead, which
+currently only cover Austria. This variable is only used
+if \code{weibull = TRUE}.}
 }
 \value{
 Returns a data.frame of the best (energy/efficiency) individual
-  during all iterations
+during all iterations
 }
 \description{
 Plot the best solutions of the genetic algorithm.
-  Depending on \code{plotEn}, either the best energy or efficiency solutions
-  can be plotted. \code{best} indicates the amount of best solutions to plot.
+Depending on \code{plotEn}, either the best energy or efficiency solutions
+can be plotted. \code{best} indicates the amount of best solutions to plot.
 }
 \examples{
-\donttest{
+\dontrun{
 ## Add some data examples from the package
 library(sf)
 Polygon1 <- sf::st_as_sf(sf::st_sfc(
   sf::st_polygon(list(cbind(
     c(4498482, 4498482, 4499991, 4499991, 4498482),
-    c(2668272, 2669343, 2669343, 2668272, 2668272)))), 
+    c(2668272, 2669343, 2669343, 2668272, 2668272)
+  ))),
   crs = 3035
 ))
 
@@ -79,14 +80,11 @@ plot_result(resultrect, Polygon1, best = 1, plotEn = 1, topographie = FALSE)
 }
 \seealso{
 Other Plotting Functions: 
-\code{\link{interpol_view}()},
 \code{\link{plot_cloud}()},
 \code{\link{plot_development}()},
 \code{\link{plot_evolution}()},
 \code{\link{plot_fitness_evolution}()},
-\code{\link{plot_heatmap}()},
 \code{\link{plot_parkfitness}()},
-\code{\link{plot_viewshed}()},
 \code{\link{plot_windfarmGA}()},
 \code{\link{plot_windrose}()},
 \code{\link{random_search_single}()}

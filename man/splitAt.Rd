@@ -7,7 +7,7 @@
 splitAt(x, pos)
 }
 \arguments{
-\item{x}{A numeric variable that represents an individual's 
+\item{x}{A numeric variable that represents an individual's
 binary genetic code}
 
 \item{pos}{A numeric value that indicates where to split the genetic code}
@@ -26,16 +26,13 @@ splitAt(as.matrix(1:100), 20)
 }
 \seealso{
 Other Helper Functions: 
-\code{\link{dup_coords}()},
-\code{\link{getDEM}()},
-\code{\link{getISO3}()},
 \code{\link{get_grids}()},
 \code{\link{grid_area}()},
 \code{\link{hexa_area}()},
 \code{\link{isSpatial}()},
 \code{\link{permutations}()},
-\code{\link{readintegerSel}()},
 \code{\link{readinteger}()},
+\code{\link{readintegerSel}()},
 \code{\link{windata_format}()}
 }
 \concept{Helper Functions}

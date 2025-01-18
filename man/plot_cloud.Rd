@@ -7,18 +7,17 @@
 plot_cloud(result, pl = FALSE)
 }
 \arguments{
-\item{result}{The output of \code{\link{windfarmGA}} or
-\code{\link{genetic_algorithm}}}
+\item{result}{The output of \code{\link{genetic_algorithm}}}
 
 \item{pl}{Should the results be plotted? Default is FALSE}
 }
 \value{
 Returns a data.frame with the values for fitness, efficiency and
-  energy for all evaluated individuals
+energy for all evaluated individuals
 }
 \description{
 Plot the fitness, efficiency and energy outputs of all
-  generations and the corresponding standard deviations.
+generations and the corresponding standard deviations.
 }
 \examples{
 \donttest{
@@ -28,14 +27,11 @@ plcdf <- plot_cloud(resulthex, TRUE)
 }
 \seealso{
 Other Plotting Functions: 
-\code{\link{interpol_view}()},
 \code{\link{plot_development}()},
 \code{\link{plot_evolution}()},
 \code{\link{plot_fitness_evolution}()},
-\code{\link{plot_heatmap}()},
 \code{\link{plot_parkfitness}()},
 \code{\link{plot_result}()},
-\code{\link{plot_viewshed}()},
 \code{\link{plot_windfarmGA}()},
 \code{\link{plot_windrose}()},
 \code{\link{random_search_single}()}

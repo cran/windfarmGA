@@ -11,22 +11,13 @@ Returns the selected crossover method (character)
 }
 \description{
 Checks whether the input for \code{\link{crossover}} is given
-  correctly. If not, a message is prompted which asks to input one of the 2
-  available crossover methods. The available inputs are "E" and "R". "E"
-  refers to partitioning at equal intervals and "R" refers to random
-  partitioning.
-}
-\examples{
-\dontrun{
-  readinteger()
-}
-
+correctly. If not, a message is prompted which asks to input one of the 2
+available crossover methods. The available inputs are "E" and "R". "E"
+refers to partitioning at equal intervals and "R" refers to random
+partitioning.
 }
 \seealso{
 Other Helper Functions: 
-\code{\link{dup_coords}()},
-\code{\link{getDEM}()},
-\code{\link{getISO3}()},
 \code{\link{get_grids}()},
 \code{\link{grid_area}()},
 \code{\link{hexa_area}()},

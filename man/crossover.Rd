@@ -4,7 +4,7 @@
 \alias{crossover}
 \title{Crossover Method}
 \usage{
-crossover(se6, u, uplimit, crossPart, verbose, seed)
+crossover(se6, u, uplimit, crossPart = c("EQU", "RAN"), verbose, seed)
 }
 \arguments{
 \item{se6}{The selected individuals. The output of \code{\link{selection}}}
@@ -21,25 +21,25 @@ crossover(se6, u, uplimit, crossPart, verbose, seed)
 }
 \value{
 Returns a binary coded matrix of all permutations and all grid cells,
-  where 0 indicates no turbine and 1 indicates a turbine in the grid cell.
+where 0 indicates no turbine and 1 indicates a turbine in the grid cell.
 }
 \description{
-The crossover method creates new offspring with the selected 
-  individuals by permutating their genetic codes.
+The crossover method creates new offspring with the selected
+individuals by permutating their genetic codes.
 }
 \examples{
 ## Create two random parents with an index and random binary values
 Parents <- data.frame(
   ID = 1:20,
-  bin = sample(c(0,1),20, replace = TRUE, prob = c(70,30)),
-  bin.1 = sample(c(0,1),20, replace=TRUE,prob = c(30,70)))
+  bin = sample(c(0, 1), 20, replace = TRUE, prob = c(70, 30)),
+  bin.1 = sample(c(0, 1), 20, replace = TRUE, prob = c(30, 70))
+)
 
 ## Create random Fitness values for both individuals
 FitParents <- data.frame(ID = 1, Fitness = 1000, Fitness.1 = 20)
 
 ## Assign both values to a list
-CrossSampl <- list(Parents,FitParents);
-
+CrossSampl <- list(Parents, FitParents)
 ## Cross their data at equal locations with 2 crossover parts
 crossover(CrossSampl, u = 1.1, uplimit = 300, crossPart = "EQU")
 
@@ -57,7 +57,6 @@ Other Genetic Algorithm Functions:
 \code{\link{init_population}()},
 \code{\link{mutation}()},
 \code{\link{selection}()},
-\code{\link{trimton}()},
-\code{\link{windfarmGA}()}
+\code{\link{trimton}()}
 }
 \concept{Genetic Algorithm Functions}

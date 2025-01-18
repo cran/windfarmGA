@@ -7,8 +7,7 @@
 random_search(result, Polygon1, n = 20, best = 1, Plot = FALSE, max_dist = 2.2)
 }
 \arguments{
-\item{result}{The resulting matrix of the function \code{\link{genetic_algorithm}}
-or \code{\link{windfarmGA}}}
+\item{result}{The resulting matrix of the function \code{\link{genetic_algorithm}}}
 
 \item{Polygon1}{The considered area as SpatialPolygon, SimpleFeature Polygon
 or coordinates as matrix/data.frame}
@@ -28,7 +27,7 @@ Returns a list.
 }
 \description{
 Perform a random search in the grid cells, to further optimize
-  the output of the wind farm layout.
+the output of the wind farm layout.
 }
 \examples{
 \donttest{

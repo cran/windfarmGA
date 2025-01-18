@@ -27,21 +27,17 @@ Venables, Bill. "Programmers Note", R-News, Vol 1/1, Jan. 2001.
 }
 \seealso{
 Other Helper Functions: 
-\code{\link{dup_coords}()},
-\code{\link{getDEM}()},
-\code{\link{getISO3}()},
 \code{\link{get_grids}()},
 \code{\link{grid_area}()},
 \code{\link{hexa_area}()},
 \code{\link{isSpatial}()},
-\code{\link{readintegerSel}()},
 \code{\link{readinteger}()},
+\code{\link{readintegerSel}()},
 \code{\link{splitAt}()},
 \code{\link{windata_format}()}
 }
 \author{
-Original versions by Bill Venables 
-\email{Bill.Venables@cmis.csiro.au.} Extended to handle repeats.allowed
-by Gregory R. Warnes \email{greg@warnes.net.}
+Original versions by Bill Venables. Extended to handle repeats.allowed
+by Gregory R. Warnes
 }
 \concept{Helper Functions}

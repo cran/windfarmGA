@@ -17,14 +17,14 @@ individuals. Default is 100.}
 }
 \value{
 Returns a list of \code{nStart} initial individuals, each consisting
-  of \code{n} turbines. Resulting list has the x and y coordinates, the grid
-  cell ID and a binary variable of 1, indicating a turbine in the grid cell.
+of \code{n} turbines. Resulting list has the x and y coordinates, the grid
+cell ID and a binary variable of 1, indicating a turbine in the grid cell.
 }
 \description{
 Create \code{nStart} random sub-selections from the indexed
-  grid and assign binary variable 1 to selected grids. This function
-  initiates the genetic algorithm with a first random population and will
-  only be needed in the first iteration.
+grid and assign binary variable 1 to selected grids. This function
+initiates the genetic algorithm with a first random population and will
+only be needed in the first iteration.
 }
 \examples{
 library(sf)
@@ -32,7 +32,8 @@ library(sf)
 Polygon1 <- sf::st_as_sf(sf::st_sfc(
   sf::st_polygon(list(cbind(
     c(4498482, 4498482, 4499991, 4499991, 4498482),
-    c(2668272, 2669343, 2669343, 2668272, 2668272)))),
+    c(2668272, 2669343, 2669343, 2668272, 2668272)
+  ))),
   crs = 3035
 ))
 
@@ -49,7 +50,6 @@ Other Genetic Algorithm Functions:
 \code{\link{genetic_algorithm}()},
 \code{\link{mutation}()},
 \code{\link{selection}()},
-\code{\link{trimton}()},
-\code{\link{windfarmGA}()}
+\code{\link{trimton}()}
 }
 \concept{Genetic Algorithm Functions}

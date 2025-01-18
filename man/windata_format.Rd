@@ -15,39 +15,40 @@ A list of windspeed and probabilities
 }
 \description{
 Helper Function, which transforms winddata to an acceptable
-  format
+format
 }
 \examples{
 \donttest{
-wind_df <- data.frame(ws = c(12, 30, 45), 
-                      wd = c(0, 90, 150),
-                      probab = 30:32)
-windata_format(wind_df)
-
-wind_df <- data.frame(speed = c(12, 30, 45), 
-                      direction = c(90, 90, 150)
-                      ,probab = c(10, 20, 60)
+wind_df <- data.frame(
+  ws = c(12, 30, 45),
+  wd = c(0, 90, 150),
+  probab = 30:32
 )
 windata_format(wind_df)
 
-wind_df <- data.frame(speed = c(12, 30, 45), 
-                      direction = c(400, 90, 150)
+wind_df <- data.frame(
+  speed = c(12, 30, 45),
+  direction = c(90, 90, 150),
+  probab = c(10, 20, 60)
+)
+windata_format(wind_df)
+
+wind_df <- data.frame(
+  speed = c(12, 30, 45),
+  direction = c(400, 90, 150)
 )
 windata_format(wind_df)
 }
 }
 \seealso{
 Other Helper Functions: 
-\code{\link{dup_coords}()},
-\code{\link{getDEM}()},
-\code{\link{getISO3}()},
 \code{\link{get_grids}()},
 \code{\link{grid_area}()},
 \code{\link{hexa_area}()},
 \code{\link{isSpatial}()},
 \code{\link{permutations}()},
-\code{\link{readintegerSel}()},
 \code{\link{readinteger}()},
+\code{\link{readintegerSel}()},
 \code{\link{splitAt}()}
 }
 \concept{Helper Functions}

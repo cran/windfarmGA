@@ -18,24 +18,27 @@ A Simple Feature Polygon
 }
 \description{
 Helper Function, which transforms SpatialPolygons or coordinates
-  in matrix/data.frame - form to a Simple Feature Polygon
+in matrix/data.frame - form to a Simple Feature Polygon
 }
 \details{
 If the columns are named, it will look for common abbreviation to
-  match x/y or long/lat columns. If the columns are not named, the first 2
-  numeric columns are taken.
+match x/y or long/lat columns. If the columns are not named, the first 2
+numeric columns are taken.
 }
 \examples{
 \donttest{
 library(sf)
-df <- rbind(c(4498482, 2668272), c(4498482, 2669343),
-            c(4499991, 2669343), c(4499991, 2668272))
+df <- rbind(
+  c(4498482, 2668272), c(4498482, 2669343),
+  c(4499991, 2669343), c(4499991, 2668272)
+)
 isSpatial(df)
 
 Polygon1 <- sf::st_as_sf(sf::st_sfc(
   sf::st_polygon(list(cbind(
     c(4498482, 4498482, 4499991, 4499991, 4498482),
-    c(2668272, 2669343, 2669343, 2668272, 2668272)))),
+    c(2668272, 2669343, 2669343, 2668272, 2668272)
+  ))),
   crs = 3035
 ))
 isSpatial(st_coordinates(Polygon1), 3035)
@@ -43,15 +46,12 @@ isSpatial(st_coordinates(Polygon1), 3035)
 }
 \seealso{
 Other Helper Functions: 
-\code{\link{dup_coords}()},
-\code{\link{getDEM}()},
-\code{\link{getISO3}()},
 \code{\link{get_grids}()},
 \code{\link{grid_area}()},
 \code{\link{hexa_area}()},
 \code{\link{permutations}()},
-\code{\link{readintegerSel}()},
 \code{\link{readinteger}()},
+\code{\link{readintegerSel}()},
 \code{\link{splitAt}()},
 \code{\link{windata_format}()}
 }
